@@ -224,20 +224,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="p-0 overflow-x-auto">
               <div className="min-w-[800px] relative">
-                {/* 24h Grid */}
-                <div className="flex border-b border-primary/5">
-                  <div className="w-20 flex-shrink-0 border-r border-primary/10 bg-primary/5 py-4 text-center text-xs font-bold text-primary">TIME</div>
-                  <div className="flex-1 grid grid-cols-24">
-                    {hours.map(h => (
-                      <div key={h} className="border-r border-primary/5 py-4 text-center text-[10px] font-medium text-muted-foreground uppercase">
-                        {h === 0 ? '12am' : h < 12 ? `${h}am` : h === 12 ? '12pm' : `${h-12}pm`}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Vertical Timeline Layout - Task-Only View */}
-                <div className="relative flex flex-col gap-4 p-4 min-h-[400px]">
+                <div className="relative flex flex-col gap-3 p-0 min-h-[400px]">
                   <AnimatePresence>
                     {timelineTasks.length > 0 ? (
                       timelineTasks
@@ -260,55 +247,45 @@ export default function Dashboard() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             className={cn(
-                              "relative rounded-2xl border shadow-sm p-5 transition-all hover:shadow-xl hover:scale-[1.02] cursor-pointer group",
+                              "relative rounded-xl border shadow-sm p-4 transition-all hover:shadow-lg hover:scale-[1.01] cursor-pointer group",
                               task.completed 
                                 ? "bg-muted/30 border-muted text-muted-foreground" 
-                                : "bg-white border-primary/20 text-primary shadow-primary/5 hover:border-primary/40"
+                                : "bg-white border-primary/10 text-primary shadow-primary/5 hover:border-primary/30"
                             )}
                             onClick={() => updateTask.mutate({ id: task.id, completed: !task.completed })}
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
                                 <div className={cn(
-                                  "p-2 rounded-full",
-                                  task.completed ? "bg-muted/50" : "bg-primary/10"
+                                  "p-1.5 rounded-full",
+                                  task.completed ? "bg-muted/50" : "bg-primary/5"
                                 )}>
-                                  <Clock className={cn("w-5 h-5", task.completed ? "text-muted-foreground" : "text-primary")} />
+                                  <Clock className={cn("w-4 h-4", task.completed ? "text-muted-foreground" : "text-primary")} />
                                 </div>
                                 <div>
                                   <div className="flex items-center gap-2">
                                     <h3 className={cn(
-                                      "font-bold text-xl tracking-tight",
+                                      "font-bold text-lg tracking-tight",
                                       task.completed && "line-through opacity-60"
                                     )}>
                                       {task.title}
                                     </h3>
-                                    {!task.completed && <Sparkles className="w-4 h-4 text-accent-foreground animate-pulse" />}
+                                    {!task.completed && <Sparkles className="w-3 h-3 text-accent-foreground animate-pulse" />}
                                   </div>
-                                  <p className="text-sm font-semibold opacity-70">
+                                  <p className="text-xs font-medium opacity-60">
                                     {format(parse(task.startTime, "HH:mm", new Date()), "h:mm a")} - {format(parse(task.endTime, "HH:mm", new Date()), "h:mm a")}
                                   </p>
                                 </div>
                               </div>
                               
                               <div className="flex items-center gap-2">
-                                {task.completed ? (
-                                  <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                                {task.completed && (
+                                  <div className="bg-green-100/50 text-green-700 px-2.5 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1">
                                     <CheckIcon className="w-3 h-3" /> Done
                                   </div>
-                                ) : (
-                                  <Button size="sm" variant="ghost" className="rounded-full hover:bg-primary/5">
-                                    Mark Done
-                                  </Button>
                                 )}
                               </div>
                             </div>
-
-                            {task.description && (
-                              <p className="mt-3 text-sm text-muted-foreground border-t border-primary/5 pt-3">
-                                {task.description}
-                              </p>
-                            )}
                           </motion.div>
                         ))
                     ) : (
