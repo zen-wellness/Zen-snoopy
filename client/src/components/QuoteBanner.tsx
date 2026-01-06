@@ -1,23 +1,25 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Quote } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import snoopyImg from "@assets/IMG_0336_1767718090891.jpeg";
 
 const QUOTES = [
-  { text: "The mind is everything. What you think you become.", author: "Buddha" },
-  { text: "Smile, breathe and go slowly.", author: "Thich Nhat Hanh" },
-  { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
-  { text: "He who has a why to live can bear almost any how.", author: "Friedrich Nietzsche" },
-  { text: "Do less, be more.", author: "Unknown" },
-  { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
-  { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
-  { text: "Everything has beauty, but not everyone sees it.", author: "Confucius" },
-  { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
-  { text: "What you get by achieving your goals is not as important as what you become by achieving your goals.", author: "Zig Ziglar" },
+  { text: "Keep looking up... that's the secret of life. ✨", author: "Snoopy" },
+  { text: "Don't worry about tomorrow. Just focus on today. 🌸", author: "Snoopy" },
+  { text: "A good day is any day you decide to make it one. 💖", author: "Snoopy" },
+  { text: "The more you like yourself, the less you are like anyone else. 🎀", author: "Snoopy" },
+  { text: "To live is to dance, to dance is to live. 💃", author: "Snoopy" },
+  { text: "Happiness is a warm puppy. 🐶", author: "Snoopy" },
+  { text: "Learn from yesterday, live for today, look to tomorrow. 🌈", author: "Snoopy" },
+  { text: "Be yourself. No one can say you're doing it wrong. ✨", author: "Snoopy" },
 ];
 
 export function QuoteBanner() {
-  const randomQuote = useMemo(() => {
-    return QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  const [quote, setQuote] = useState(QUOTES[0]);
+
+  useEffect(() => {
+    const random = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+    setQuote(random);
   }, []);
 
   return (
@@ -25,19 +27,37 @@ export function QuoteBanner() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-8 md:p-10 border border-primary/10 shadow-sm"
+      className="relative overflow-hidden rounded-2xl bg-white border border-border shadow-sm p-6 md:p-8"
     >
-      <div className="absolute top-0 right-0 p-8 opacity-5">
-        <Quote size={120} />
-      </div>
-      
-      <div className="relative z-10 max-w-2xl">
-        <h2 className="text-2xl md:text-3xl font-serif font-medium text-foreground leading-relaxed italic">
-          "{randomQuote.text}"
-        </h2>
-        <p className="mt-4 text-sm font-sans font-medium text-muted-foreground uppercase tracking-widest">
-          — {randomQuote.author}
-        </p>
+      <div className="flex flex-col md:flex-row items-center gap-6">
+        <div className="flex-shrink-0 w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden border-2 border-primary/20 shadow-inner bg-pink-50/50">
+          <img 
+            src={snoopyImg} 
+            alt="Zen Snoopy" 
+            className="w-full h-full object-contain"
+          />
+        </div>
+        
+        <div className="flex-1 text-center md:text-left space-y-3">
+          <div className="inline-block p-2 bg-primary/10 rounded-full mb-1">
+            <Quote className="w-4 h-4 text-primary" />
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={quote.text}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <h2 className="text-xl md:text-2xl font-serif font-medium text-foreground leading-relaxed italic">
+                "{quote.text}"
+              </h2>
+              <p className="mt-2 text-sm font-sans font-medium text-muted-foreground uppercase tracking-widest">
+                — {quote.author}
+              </author>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </motion.div>
   );
