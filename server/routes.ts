@@ -31,6 +31,7 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
     const hasTasksForToday = tasksData.some(t => t.date === today);
 
     if (!hasTasksForToday) {
+      console.log(`Populating schedule for user ${user.id} on ${today}`);
       const templateTasks = [
         { title: "Sleep", startTime: "02:00", endTime: "08:00" },
         { title: "School prep", startTime: "08:01", endTime: "09:30" },
