@@ -50,6 +50,47 @@ export class DatabaseStorage implements IStorage {
         photoURL: user.photoURL,
       }
     }).returning();
+
+    // Check if tasks already exist for this user to avoid duplication
+    const existingTasks = await db.select().from(tasks).where(eq(tasks.userId, newUser.id)).limit(1);
+    if (existingTasks.length > 0) return newUser;
+
+    // Create template schedule for new users
+    const templateTasks = [
+      { title: "Sleep", startTime: "02:00", endTime: "08:00" },
+      { title: "School prep", startTime: "08:01", endTime: "09:30" },
+      { title: "Sleep/Journal/Alone time", startTime: "09:31", endTime: "12:00" },
+      { title: "Mommy duties", startTime: "12:01", endTime: "17:00" },
+      { title: "Gaming time", startTime: "17:01", endTime: "19:00" },
+      { title: "Homework time", startTime: "19:01", endTime: "20:00" },
+      { title: "Time to clean that ass", startTime: "20:01", endTime: "21:00" },
+      { title: "Show time", startTime: "21:01", endTime: "23:00" },
+      { title: "Gaming time", startTime: "23:01", endTime: "02:00" },
+    ];
+
+    const today = new Date();
+    // Add tasks for the next 7 days if they are M-F
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const day = date.getDay();
+      
+      // 1-5 is Mon-Fri
+      if (day >= 1 && day <= 5) {
+        const dateStr = date.toISOString().split('T')[0];
+        for (const task of templateTasks) {
+          await db.insert(tasks).values({
+            userId: newUser.id,
+            title: task.title,
+            startTime: task.startTime,
+            endTime: task.endTime,
+            date: dateStr,
+            completed: false,
+          });
+        }
+      }
+    }
+
     return newUser;
   }
 
