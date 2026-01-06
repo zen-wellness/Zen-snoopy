@@ -48,6 +48,7 @@ export function LoveBubble() {
           opacity: 1,
           y: position.y - 20, // Gentle floating up
         }}
+        exit={{ scale: 0, opacity: 0 }}
         transition={{ 
           type: "spring", 
           stiffness: 100, 
@@ -61,7 +62,8 @@ export function LoveBubble() {
         }}
         drag
         dragConstraints={{ left: 0, right: window.innerWidth - 200, top: 0, bottom: window.innerHeight - 100 }}
-        className="fixed z-[100] cursor-grab active:cursor-grabbing"
+        onClick={() => setIsVisible(false)}
+        className="fixed z-[100] cursor-pointer active:cursor-grabbing"
       >
         <div className="relative group">
           <div className="absolute -inset-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
