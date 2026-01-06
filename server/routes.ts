@@ -26,12 +26,14 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
     });
 
     // Check if the user needs their template schedule for today
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA'); // More reliable YYYY-MM-DD
     const tasksData = await storage.getTasks(user.id);
     const hasTasksForToday = tasksData.some(t => t.date === today);
 
+    console.log(`[DEBUG] User ${user.id} tasks: ${tasksData.length}. For today (${today}): ${hasTasksForToday}`);
+
     if (!hasTasksForToday) {
-      console.log(`Populating schedule for user ${user.id} on ${today}`);
+      console.log(`[DEBUG] POPULATING schedule for user ${user.id} on ${today}`);
       const templateTasks = [
         { title: "Sleep", startTime: "02:00", endTime: "08:00" },
         { title: "School prep", startTime: "08:01", endTime: "09:30" },
@@ -52,6 +54,9 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
           completed: false,
         });
       }
+      
+      // Force return the newly created tasks in the next request
+      // We don't need to do anything else here as verifyAuth runs before the route handler
     }
 
     next();

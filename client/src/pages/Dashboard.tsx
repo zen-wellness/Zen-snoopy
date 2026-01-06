@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Sparkles, Calendar as CalendarIcon, List, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import snoopyStanding from "@assets/IMG_0320_1767672528678.jpeg";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTasks, useUpdateTask } from "@/hooks/use-tasks";
@@ -20,7 +20,11 @@ export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
   const dateStr = selectedDate ? format(selectedDate, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd");
-  const { data: tasks } = useTasks(dateStr);
+  const { data: tasks, isLoading: tasksLoading } = useTasks(dateStr);
+  
+  useEffect(() => {
+    console.log("DASHBOARD: Tasks updated", tasks);
+  }, [tasks]);
   const updateTask = useUpdateTask();
 
   const hours = Array.from({ length: 24 }, (_, i) => i);

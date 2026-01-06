@@ -90,7 +90,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTasks(userId: string): Promise<Task[]> {
-    return await db.select().from(tasks).where(eq(tasks.userId, userId));
+    console.log(`FETCHING TASKS FOR USER: ${userId}`);
+    const results = await db.select().from(tasks).where(eq(tasks.userId, userId));
+    console.log(`FOUND ${results.length} TASKS FOR USER ${userId}`);
+    return results;
   }
 
   async createTask(userId: string, task: InsertTask): Promise<Task> {

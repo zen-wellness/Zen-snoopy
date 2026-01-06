@@ -11,9 +11,16 @@ export function useTasks(date?: string) {
         ? `${api.tasks.list.path}?date=${date}`
         : api.tasks.list.path;
       
-      const res = await fetch(url, { credentials: "include" });
+      const res = await fetch(url, { 
+        credentials: "include",
+        headers: {
+          "Cache-Control": "no-cache"
+        }
+      });
       if (!res.ok) throw new Error("Failed to fetch tasks");
-      return api.tasks.list.responses[200].parse(await res.json());
+      const data = await res.json();
+      console.log("Tasks received from server:", data);
+      return api.tasks.list.responses[200].parse(data);
     },
   });
 }
