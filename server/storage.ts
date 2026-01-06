@@ -7,7 +7,7 @@ import {
   type HabitLog, type InsertHabitLog,
   type JournalEntry, type InsertJournalEntry
 } from "@shared/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 export interface IStorage {
   // User
@@ -149,7 +149,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getJournalEntries(userId: string): Promise<JournalEntry[]> {
-    return await db.select().from(journalEntries).where(eq(journalEntries.userId, userId));
+    return await db.select()
+      .from(journalEntries)
+      .where(eq(journalEntries.userId, userId))
+      .orderBy(desc(journalEntries.createdAt));
   }
 
   async createJournalEntry(userId: string, entry: InsertJournalEntry): Promise<JournalEntry> {

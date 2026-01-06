@@ -11,6 +11,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTasks, useUpdateTask } from "@/hooks/use-tasks";
+import { TaskModal } from "@/components/TaskModal";
 import { format, parse, isWithinInterval, startOfDay, addHours } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -200,6 +201,9 @@ export default function Dashboard() {
               <CardTitle className="flex items-center justify-between">
                 <span>Daily Timeline - {format(selectedDate || new Date(), "EEEE, MMMM do")}</span>
                 <div className="flex gap-2">
+                  <TaskModal defaultDate={dateStr}>
+                    <Button variant="outline" size="sm" className="rounded-full">Add Event</Button>
+                  </TaskModal>
                   <Button variant="outline" size="sm" onClick={() => setSelectedDate(new Date())} className="rounded-full">Today</Button>
                 </div>
               </CardTitle>

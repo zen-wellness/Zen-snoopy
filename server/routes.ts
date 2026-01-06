@@ -142,13 +142,17 @@ export async function registerRoutes(
   // -- Journal --
   app.get(api.journal.list.path, verifyAuth, async (req, res) => {
     const userId = (req as any).user.uid;
-    const entries = await storage.getJournalEntries(userId);
+    const date = req.query.date as string;
+    let entries = await storage.getJournalEntries(userId);
+    if (date) {
+      entries = entries.filter(e => e.date === date);
+    }
     res.json(entries);
   });
 
   app.post(api.journal.create.path, verifyAuth, async (req, res) => {
     const userId = (req as any).user.uid;
-    const input = api.journal.create.input.parse(req.body);
+    const input = api.journal.create.input.parse({ ...req.body, userId });
     const entry = await storage.createJournalEntry(userId, input);
     res.status(201).json(entry);
   });

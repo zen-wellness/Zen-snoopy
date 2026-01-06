@@ -68,6 +68,12 @@ export function TaskList({ date }: { date?: string }) {
 
   const handleToggle = (id: number, completed: boolean) => {
     updateTask.mutate({ id, completed });
+    if (completed) {
+      toast({
+        title: "✨ Task complete!",
+        description: "Great job maintaining your zen schedule.",
+      });
+    }
   };
 
   return (
