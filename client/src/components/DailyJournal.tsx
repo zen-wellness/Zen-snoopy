@@ -4,8 +4,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { useState } from "react";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, History } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLocation } from "wouter";
 
 const MOODS = [
   { label: "Peaceful", emoji: "🌿", color: "bg-green-100 text-green-700" },
@@ -19,6 +20,7 @@ export function DailyJournal() {
   const today = format(new Date(), "yyyy-MM-dd");
   const { data: entries, isLoading } = useJournalEntries(today);
   const createEntry = useCreateJournalEntry();
+  const [, setLocation] = useLocation();
   
   const [content, setContent] = useState("");
   const [selectedMood, setSelectedMood] = useState<string | undefined>();
@@ -41,7 +43,18 @@ export function DailyJournal() {
   return (
     <Card className="h-full border-border/50 shadow-sm bg-white transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between p-4 md:p-6">
-        <CardTitle className="text-lg md:text-xl font-serif font-medium">Reflection</CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle className="text-lg md:text-xl font-serif font-medium">Reflection</CardTitle>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setLocation("/journal-history")}
+            className="h-8 w-8 text-muted-foreground hover:text-primary"
+            title="View History"
+          >
+            <History className="h-4 w-4" />
+          </Button>
+        </div>
         <Button 
           variant="ghost" 
           size="sm" 

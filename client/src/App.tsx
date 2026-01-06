@@ -8,6 +8,7 @@ import { Loader2, Sparkles } from "lucide-react";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import Landing from "@/pages/Landing";
+import JournalHistory from "@/pages/JournalHistory";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -41,6 +42,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
+      <Route path="/journal-history" component={JournalHistory} />
       <Route component={NotFound} />
     </Switch>
   );
