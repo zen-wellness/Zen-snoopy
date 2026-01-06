@@ -1,14 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Moon, Sparkles, Heart } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/hooks/use-auth";
 import snoopyHeart from "@assets/IMG_0317_1767672528677.png";
 import snoopyAviator from "@assets/IMG_0318_1767672528678.png";
 import snoopyRoof from "@assets/IMG_0319_1767672528678.png";
 
 export default function Landing() {
-  const handleLogin = () => {
-    window.location.href = "/api/login";
-  };
+  const { login, isLoggingIn } = useAuth();
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden">
@@ -20,10 +19,11 @@ export default function Landing() {
         </div>
         <Button 
           variant="outline" 
-          onClick={handleLogin}
+          onClick={() => login()}
+          disabled={isLoggingIn}
           className="rounded-full px-6 border-primary/20 hover:bg-primary/10 hover:text-primary bg-white/50 backdrop-blur-sm"
         >
-          Sweet Dreams Sign In
+          {isLoggingIn ? "Signing in..." : "Sweet Dreams Sign In"}
         </Button>
       </nav>
 
@@ -57,10 +57,11 @@ export default function Landing() {
           <div className="pt-8">
             <Button 
               size="lg" 
-              onClick={handleLogin}
+              onClick={() => login()}
+              disabled={isLoggingIn}
               className="rounded-full px-10 py-8 text-xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 group"
             >
-              Start My Journey
+              {isLoggingIn ? "Starting..." : "Start My Journey"}
               <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
