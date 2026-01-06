@@ -44,7 +44,9 @@
 
   /* Universal transparency for cards and containers */
   .bg-card {
-    @apply bg-white/40 backdrop-blur-md !important;
+    @apply bg-white/40 !important;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px) !important;
   }
   
   .bg-background {
