@@ -2,35 +2,32 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
-import { auth } from "./lib/firebase";
 import { z } from "zod";
 
-// Middleware to verify Firebase token
+// Middleware to verify Auth (Mocked for now)
 async function verifyAuth(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+  // Use a hardcoded mock user ID
+  const mockUid = "test-user-id";
+  const mockEmail = "test@example.com";
+  const mockName = "Test User";
 
-  const token = authHeader.split(' ')[1];
   try {
-    const decodedToken = await auth.verifyIdToken(token);
-    (req as any).user = decodedToken;
-    
     // Ensure user exists in our DB
     const user = await storage.createUser({
-      id: decodedToken.uid,
-      email: decodedToken.email,
-      displayName: decodedToken.name,
-      photoURL: decodedToken.picture,
+      id: mockUid,
+      email: mockEmail,
+      displayName: mockName,
+      photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${mockUid}`,
     });
 
+    (req as any).user = { uid: mockUid, email: mockEmail, name: mockName };
+    
     // Check if the user needs their template schedule for today
     const today = new Date().toLocaleDateString('en-CA'); // More reliable YYYY-MM-DD
     const tasksData = await storage.getTasks(user.id);
     const hasTasksForToday = tasksData.some(t => t.date === today);
 
-    console.log(`[DEBUG] User ${user.id} tasks: ${tasksData.length}. For today (${today}): ${hasTasksForToday}`);
+    console.log(`[DEBUG] Mock User ${user.id} tasks: ${tasksData.length}. For today (${today}): ${hasTasksForToday}`);
 
     if (!hasTasksForToday) {
       console.log(`[DEBUG] POPULATING schedule for user ${user.id} on ${today}`);
@@ -58,8 +55,8 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
 
     next();
   } catch (error) {
-    console.error("Auth verification failed:", error);
-    return res.status(401).json({ message: 'Unauthorized' });
+    console.error("Mock Auth verification failed:", error);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 }
 

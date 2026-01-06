@@ -1,109 +1,45 @@
-import { auth } from "@/lib/firebase";
-import { 
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  GoogleAuthProvider, 
-  signOut, 
-  onAuthStateChanged,
-  type User as FirebaseUser 
-} from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 
 export function useAuth() {
-  const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<any>({
+    uid: "test-user-id",
+    email: "test@example.com",
+    displayName: "Test User",
+    photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=test",
+  });
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log("Auth state changed:", user?.uid);
-      setUser(user);
-      setIsLoading(false);
-      if (user) {
-         queryClient.invalidateQueries();
-      }
-    }, (error) => {
-      console.error("Auth state error:", error);
-      setIsLoading(false);
-    });
-
-    // Check for redirect result on mount
-    getRedirectResult(auth).then((result) => {
-      if (result?.user) {
-        console.log("Redirect success:", result.user.uid);
-        setUser(result.user);
-        toast({
-          title: "Welcome back!",
-          description: "Successfully signed in.",
-        });
-      }
-    }).catch((error) => {
-      console.error("Redirect error:", error);
-      // Only show error if it's not a common expected one
-      if (error.code !== 'auth/internal-error') {
-        toast({
-          title: "Login Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    });
-
-    return () => unsubscribe();
-  }, [queryClient, toast]);
+    // Mock user is always logged in
+    queryClient.invalidateQueries();
+  }, [queryClient]);
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      try {
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ 
-          prompt: 'select_account'
-        });
-        
-        // Use popup by default, with redirect fallback
-        try {
-          console.log("Attempting sign-in with popup...");
-          await signInWithPopup(auth, provider);
-        } catch (popupError: any) {
-          console.error("Popup failed, error code:", popupError.code, "message:", popupError.message);
-          // Force redirect for unauthorized-domain too so user can see it works on the authorized one
-          console.log("Attempting sign-in with redirect fallback...");
-          await signInWithRedirect(auth, provider);
-        }
-      } catch (error: any) {
-        console.error("Firebase Sign-in error:", error);
-        throw error;
-      }
+      // Mock login always succeeds
+      return;
     },
     onSuccess: () => {
       toast({
         title: "Welcome back!",
-        description: "Successfully signed in.",
+        description: "Successfully signed in (Mock Auth).",
       });
     },
-    onError: (error: any) => {
-      toast({
-        title: "Login Failed",
-        description: error.message || "An error occurred during login.",
-        variant: "destructive",
-      });
-    }
   });
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      await signOut(auth);
+      // Mock logout (just for UI)
+      return;
     },
     onSuccess: () => {
-      setUser(null);
-      queryClient.clear();
       toast({
         title: "Signed out",
-        description: "See you next time!",
+        description: "Mock sign out successful.",
       });
     },
   });
@@ -111,7 +47,7 @@ export function useAuth() {
   return {
     user,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: true,
     login: loginMutation.mutate,
     isLoggingIn: loginMutation.isPending,
     logout: logoutMutation.mutate,
