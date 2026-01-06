@@ -47,13 +47,8 @@ export function useAuth() {
           prompt: 'select_account'
         });
         
-        // Try popup first, fallback to redirect if needed (e.g. mobile/blocked)
-        try {
-          await signInWithPopup(auth, provider);
-        } catch (popupError: any) {
-           console.warn("Popup failed, trying redirect:", popupError);
-           await signInWithRedirect(auth, provider);
-        }
+        // Force redirect to avoid popup blockers and "stuck" states in iframes
+        await signInWithRedirect(auth, provider);
       } catch (error: any) {
         console.error("Firebase Sign-in error:", error);
         throw error;
