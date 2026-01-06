@@ -1,0 +1,21 @@
+{
+  "name": "Zen Snoopy",
+  "short_name": "ZenSnoopy",
+  "description": "A productivity and sleep tracking app with a Snoopy theme.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff0f6",
+  "theme_color": "#ffadd2",
+  "icons": [
+    {
+      "src": "/attached_assets/IMG_0320_1767672528678.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/attached_assets/IMG_0320_1767672528678.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

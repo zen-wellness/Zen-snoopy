@@ -50,6 +50,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#ffadd2" />
         <Toaster />
         <Router />
       </TooltipProvider>
