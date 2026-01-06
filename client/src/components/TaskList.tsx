@@ -10,9 +10,10 @@ import { cn } from "@/lib/utils";
 import { useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
-export function TaskList() {
+export function TaskList({ date }: { date?: string }) {
   const today = format(new Date(), "yyyy-MM-dd");
-  const { data: tasks, isLoading } = useTasks(today);
+  const activeDate = date || today;
+  const { data: tasks, isLoading } = useTasks(activeDate);
   const deleteTask = useDeleteTask();
   const updateTask = useUpdateTask();
   const { toast } = useToast();
