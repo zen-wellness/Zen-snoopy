@@ -54,9 +54,6 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
           completed: false,
         });
       }
-      
-      // Force return the newly created tasks in the next request
-      // We don't need to do anything else here as verifyAuth runs before the route handler
     }
 
     next();
@@ -74,7 +71,11 @@ export async function registerRoutes(
   // -- Tasks --
   app.get(api.tasks.list.path, verifyAuth, async (req, res) => {
     const userId = (req as any).user.uid;
-    const tasks = await storage.getTasks(userId);
+    const date = req.query.date as string;
+    let tasks = await storage.getTasks(userId);
+    if (date) {
+      tasks = tasks.filter(t => t.date === date);
+    }
     res.json(tasks);
   });
 
