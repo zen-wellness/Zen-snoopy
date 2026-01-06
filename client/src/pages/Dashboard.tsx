@@ -15,6 +15,20 @@ import { TaskModal } from "@/components/TaskModal";
 import { format, parse, isWithinInterval, startOfDay, addHours } from "date-fns";
 import { cn } from "@/lib/utils";
 
+function CheckIcon({ className }: { className?: string }) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width="24" height="24" viewBox="0 0 24 24" 
+      fill="none" stroke="currentColor" strokeWidth="2" 
+      strokeLinecap="round" strokeLinejoin="round" 
+      className={className}
+    >
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const [view, setView] = useState<'list' | 'calendar' | 'timeline'>('timeline');
@@ -222,78 +236,77 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Vertical Timeline Layout */}
-                <div className="relative flex min-h-[1200px]">
-                  {/* Time Axis (Left) */}
-                  <div className="w-20 flex-shrink-0 border-r border-primary/10 bg-primary/5 relative">
-                    {hours.map(h => (
-                      <div 
-                        key={h} 
-                        className="absolute w-full text-center text-[10px] font-bold text-primary border-t border-primary/5"
-                        style={{ top: `${(h / 24) * 100}%`, height: `${(1 / 24) * 100}%` }}
-                      >
-                        <span className="relative -top-2 bg-primary/5 px-1 rounded">
-                          {h === 0 ? '12 AM' : h < 12 ? `${h} AM` : h === 12 ? '12 PM' : `${h-12} PM`}
-                        </span>
+                {/* Vertical Timeline Layout - Task-Only View */}
+                <div className="relative flex flex-col gap-4 p-4 min-h-[400px]">
+                  <AnimatePresence>
+                    {timelineTasks.length > 0 ? (
+                      timelineTasks
+                        .sort((a: any, b: any) => a.startHour - b.startHour)
+                        .map((task: any) => (
+                          <motion.div
+                            key={task.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className={cn(
+                              "relative rounded-2xl border shadow-sm p-5 transition-all hover:shadow-xl hover:scale-[1.02] cursor-pointer group",
+                              task.completed 
+                                ? "bg-muted/30 border-muted text-muted-foreground" 
+                                : "bg-white border-primary/20 text-primary shadow-primary/5 hover:border-primary/40"
+                            )}
+                            onClick={() => updateTask.mutate({ id: task.id, completed: !task.completed })}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className={cn(
+                                  "p-2 rounded-full",
+                                  task.completed ? "bg-muted/50" : "bg-primary/10"
+                                )}>
+                                  <Clock className={cn("w-5 h-5", task.completed ? "text-muted-foreground" : "text-primary")} />
+                                </div>
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <h3 className={cn(
+                                      "font-bold text-xl tracking-tight",
+                                      task.completed && "line-through opacity-60"
+                                    )}>
+                                      {task.title}
+                                    </h3>
+                                    {!task.completed && <Sparkles className="w-4 h-4 text-accent-foreground animate-pulse" />}
+                                  </div>
+                                  <p className="text-sm font-semibold opacity-70">
+                                    {format(parse(task.startTime, "HH:mm", new Date()), "h:mm a")} - {format(parse(task.endTime, "HH:mm", new Date()), "h:mm a")}
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                {task.completed ? (
+                                  <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                                    <CheckIcon className="w-3 h-3" /> Done
+                                  </div>
+                                ) : (
+                                  <Button size="sm" variant="ghost" className="rounded-full hover:bg-primary/5">
+                                    Mark Done
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+
+                            {task.description && (
+                              <p className="mt-3 text-sm text-muted-foreground border-t border-primary/5 pt-3">
+                                {task.description}
+                              </p>
+                            )}
+                          </motion.div>
+                        ))
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-20 text-muted-foreground opacity-50">
+                        <CalendarIcon className="w-12 h-12 mb-4" />
+                        <p className="font-medium">No tasks scheduled for this day</p>
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Tasks Content (Right) */}
-                  <div className="flex-1 relative bg-white/40">
-                    {/* Horizontal Grid Lines */}
-                    {hours.map(h => (
-                      <div 
-                        key={h} 
-                        className="absolute w-full border-t border-primary/5"
-                        style={{ top: `${(h / 24) * 100}%` }}
-                      />
-                    ))}
-
-                    <AnimatePresence>
-                      {timelineTasks.map((task: any) => (
-                        <motion.div
-                          key={task.id}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 20 }}
-                          className={cn(
-                            "absolute left-4 right-4 rounded-xl border shadow-sm p-4 text-sm font-medium flex flex-col justify-center overflow-hidden transition-all hover:shadow-xl hover:z-50 cursor-pointer group",
-                            task.completed 
-                              ? "bg-muted/30 border-muted text-muted-foreground line-through" 
-                              : "bg-white border-primary/20 text-primary shadow-primary/5 hover:border-primary/40"
-                          )}
-                          style={{
-                            top: `${(task.startHour / 24) * 100}%`,
-                            height: `calc(${(task.duration / 24) * 100}% - 4px)`,
-                            minHeight: "60px"
-                          }}
-                          onClick={() => updateTask.mutate({ id: task.id, completed: !task.completed })}
-                        >
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2 truncate">
-                              {!task.completed && <Sparkles className="w-4 h-4 text-accent-foreground animate-pulse" />}
-                              <span className="truncate font-bold text-lg">{task.title}</span>
-                            </div>
-                            <div className="flex items-center gap-1 text-xs font-semibold bg-primary/5 px-2 py-1 rounded-full whitespace-nowrap">
-                              <Clock className="w-3 h-3" />
-                              <span>{format(parse(task.startTime, "HH:mm", new Date()), "h:mm a")} - {format(parse(task.endTime, "HH:mm", new Date()), "h:mm a")}</span>
-                            </div>
-                          </div>
-                          {task.description && (
-                            <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                              {task.description}
-                            </p>
-                          )}
-                          <div className="absolute right-2 bottom-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button size="sm" variant="ghost" className="h-8 text-[10px] rounded-full">
-                              {task.completed ? "Mark Incomplete" : "Complete Task"}
-                            </Button>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </CardContent>
