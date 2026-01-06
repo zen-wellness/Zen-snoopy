@@ -3,34 +3,37 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
+import { auth as adminAuth } from "./lib/firebase";
 
-// Middleware to verify Auth (Mocked for now)
+// Middleware to verify Auth
 async function verifyAuth(req: Request, res: Response, next: NextFunction) {
-  // Use a hardcoded mock user ID
-  const mockUid = "test-user-id";
-  const mockEmail = "test@example.com";
-  const mockName = "Test User";
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const idToken = authHeader.split('Bearer ')[1];
 
   try {
+    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    const { uid, email, name, picture } = decodedToken;
+
     // Ensure user exists in our DB
     const user = await storage.createUser({
-      id: mockUid,
-      email: mockEmail,
-      displayName: mockName,
-      photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${mockUid}`,
+      id: uid,
+      email: email || "",
+      displayName: name || email?.split('@')[0] || "User",
+      photoURL: picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${uid}`,
     });
 
-    (req as any).user = { uid: mockUid, email: mockEmail, name: mockName };
+    (req as any).user = { uid: user.id, email: user.email, name: user.displayName };
     
     // Check if the user needs their template schedule for today
-    const today = new Date().toLocaleDateString('en-CA'); // More reliable YYYY-MM-DD
+    const today = new Date().toLocaleDateString('en-CA');
     const tasksData = await storage.getTasks(user.id);
     const hasTasksForToday = tasksData.some(t => t.date === today);
 
-    console.log(`[DEBUG] Mock User ${user.id} tasks: ${tasksData.length}. For today (${today}): ${hasTasksForToday}`);
-
     if (!hasTasksForToday) {
-      console.log(`[DEBUG] POPULATING schedule for user ${user.id} on ${today}`);
       const templateTasks = [
         { title: "Sleep", startTime: "02:00", endTime: "08:00" },
         { title: "School prep", startTime: "08:01", endTime: "09:30" },
@@ -55,8 +58,8 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
 
     next();
   } catch (error) {
-    console.error("Mock Auth verification failed:", error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Auth verification failed:", error);
+    return res.status(401).json({ message: 'Unauthorized' });
   }
 }
 

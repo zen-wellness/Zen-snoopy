@@ -5,9 +5,26 @@ import { useAuth } from "@/hooks/use-auth";
 import snoopyHeart from "@assets/IMG_0317_1767672528677.png";
 import snoopyAviator from "@assets/IMG_0318_1767672528678.png";
 import snoopyRoof from "@assets/IMG_0319_1767672528678.png";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Landing() {
-  const { login, isLoggingIn } = useAuth();
+  const { login, register, isLoggingIn, isRegistering } = useAuth();
+  const [isLoginView, setIsLoginView] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isLoginView) {
+      login({ email, password, rememberMe });
+    } else {
+      register({ email, password });
+    }
+  };
 
   return (
     <div className="min-h-screen relative z-10 text-foreground flex flex-col overflow-x-hidden">
@@ -17,14 +34,52 @@ export default function Landing() {
           <img src={snoopyHeart} alt="Snoopy Heart" className="w-12 h-12 object-contain snoopy-float" />
           <span className="text-2xl font-bold tracking-tight text-primary">Zen Snoopy</span>
         </div>
-        <Button 
-          variant="outline" 
-          onClick={() => login()}
-          disabled={isLoggingIn}
-          className="rounded-full px-6 border-primary/20 hover:bg-primary/10 hover:text-primary bg-white/50 backdrop-blur-sm"
-        >
-          {isLoggingIn ? "Signing in..." : "Sweet Dreams Sign In"}
-        </Button>
+        <div className="flex gap-4 items-center">
+          <form onSubmit={handleSubmit} className="flex gap-2 items-end">
+            <div className="grid gap-1.5">
+              <Input 
+                type="email" 
+                placeholder="Email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-9 w-40"
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Input 
+                type="password" 
+                placeholder="Password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-9 w-40"
+              />
+            </div>
+            <div className="flex items-center space-x-2 mb-2">
+              <Checkbox 
+                id="remember" 
+                checked={rememberMe} 
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              />
+              <Label htmlFor="remember" className="text-xs text-muted-foreground">Remember me</Label>
+            </div>
+            <Button 
+              type="submit"
+              variant="default" 
+              disabled={isLoggingIn || isRegistering}
+              className="rounded-full px-6 h-9"
+            >
+              {isLoginView ? (isLoggingIn ? "..." : "Sign In") : (isRegistering ? "..." : "Register")}
+            </Button>
+          </form>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => setIsLoginView(!isLoginView)}
+            className="text-xs"
+          >
+            {isLoginView ? "Need an account?" : "Have an account?"}
+          </Button>
+        </div>
       </nav>
 
       {/* Hero */}
