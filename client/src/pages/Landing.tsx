@@ -60,7 +60,7 @@ export default function Landing() {
                 checked={rememberMe} 
                 onCheckedChange={(checked) => setRememberMe(checked as boolean)}
               />
-              <Label htmlFor="remember" className="text-xs text-muted-foreground">Remember me</Label>
+              <Label htmlFor="remember" className="text-xs text-muted-foreground">Remember</Label>
             </div>
             <Button 
               type="submit"
@@ -77,7 +77,7 @@ export default function Landing() {
             onClick={() => setIsLoginView(!isLoginView)}
             className="text-xs"
           >
-            {isLoginView ? "Need an account?" : "Have an account?"}
+            {isLoginView ? "Need account?" : "Have account?"}
           </Button>
         </div>
       </nav>
