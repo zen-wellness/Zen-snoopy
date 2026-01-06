@@ -249,7 +249,7 @@ export default function Dashboard() {
                         })
                         .filter((task: any) => {
                           // Find the sleep task start hour
-                          const sleepTask = timelineTasks.find(t => t.title === "Sleep" && t.startTime === "02:00");
+                          const sleepTask = timelineTasks.find(t => t && t.title === "Sleep" && t.startTime === "02:00");
                           const sleepStartHour = sleepTask ? sleepTask.startHour : 2; // Default to 2 AM
                           return task.startHour >= sleepStartHour || (task.title === "Sleep" && task.startTime === "02:00");
                         })
