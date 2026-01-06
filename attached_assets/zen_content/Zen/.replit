@@ -1,0 +1,54 @@
+modules = ["nodejs-20", "web", "postgresql-16"]
+run = "npm run dev"
+hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
+
+[nix]
+channel = "stable-25_05"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[env]
+PORT = "5000"
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["node", "./dist/index.cjs"]
+build = ["npm", "run", "build"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5000
+
+[agent]
+integrations = ["javascript_log_in_with_replit:2.0.0", "firebase_barebones_javascript:1.0.0"]
+expertMode = true
+
+[userenv]
+
+[userenv.shared]
+VITE_FIREBASE_AUTH_DOMAIN = "sleep-zen-e28b9.firebaseapp.com"
+VITE_FIREBASE_STORAGE_BUCKET = "sleep-zen-e28b9.firebasestorage.app"
+VITE_FIREBASE_MEASUREMENT_ID = "G-7NMJT2468G"
+VITE_FIREBASE_MESSAGING_SENDER_ID = "235105736998"
+VITE_FIREBASE_API_KEY = "AIzaSyBt4xcyK5_f23ceUJ_KkRiMWrscvlHAu94"
+VITE_FIREBASE_APP_ID = "1:235105736998:web:981e0f980042a1f09609e7"
+VITE_FIREBASE_PROJECT_ID = "sleep-zen-e28b9"
