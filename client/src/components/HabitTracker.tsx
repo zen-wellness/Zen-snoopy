@@ -42,7 +42,7 @@ export function HabitTracker() {
   };
 
   return (
-    <Card className="h-full border-border/50 shadow-sm bg-card/50 backdrop-blur-sm">
+    <Card className="h-full border-border/50 shadow-sm bg-white/40 backdrop-blur-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 md:pb-4">
         <CardTitle className="text-lg md:text-xl font-serif font-medium">Habits</CardTitle>
         <Dialog open={isAdding} onOpenChange={setIsAdding}>

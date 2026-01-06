@@ -39,7 +39,7 @@ export function DailyJournal() {
   if (isLoading) return <div className="h-64 bg-muted/20 animate-pulse rounded-2xl" />;
 
   return (
-    <Card className="h-full border-border/50 shadow-sm bg-card/50 backdrop-blur-sm transition-all duration-300">
+    <Card className="h-full border-border/50 shadow-sm bg-white/40 backdrop-blur-md transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between p-4 md:p-6">
         <CardTitle className="text-lg md:text-xl font-serif font-medium">Reflection</CardTitle>
         <Button 

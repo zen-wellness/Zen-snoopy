@@ -147,7 +147,7 @@ export default function Dashboard() {
       <main className="w-full mx-auto space-y-4 md:space-y-6">
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-2 gap-3 md:gap-6">
-          <Card className="border-primary/10 bg-white/60 backdrop-blur-md shadow-sm">
+          <Card className="border-primary/10 bg-white/40 backdrop-blur-md shadow-sm">
             <CardHeader className="p-3 md:pb-2">
               <CardTitle className="text-[10px] md:text-sm font-medium text-muted-foreground uppercase tracking-wider">Current</CardTitle>
             </CardHeader>
@@ -157,7 +157,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
           
-          <Card className="border-primary/10 bg-white/60 backdrop-blur-md shadow-sm">
+          <Card className="border-primary/10 bg-white/40 backdrop-blur-md shadow-sm">
             <CardHeader className="p-3 md:pb-2">
               <CardTitle className="text-[10px] md:text-sm font-medium text-muted-foreground uppercase tracking-wider">Next</CardTitle>
             </CardHeader>
@@ -203,8 +203,8 @@ export default function Dashboard() {
 
         <div className="pb-4">
           {view === 'timeline' ? (
-            <Card className="border-primary/10 bg-white/60 backdrop-blur-md overflow-hidden shadow-sm">
-              <CardHeader className="p-4 border-b border-primary/5 bg-white/40">
+            <Card className="border-primary/10 bg-white/40 backdrop-blur-md overflow-hidden shadow-sm">
+              <CardHeader className="p-4 border-b border-primary/5 bg-white/20">
                 <CardTitle className="flex items-center justify-between text-base">
                   <span className="truncate">{format(selectedDate || new Date(), "MMM do")}</span>
                   <div className="flex gap-1">
@@ -311,7 +311,7 @@ export default function Dashboard() {
               animate={{ opacity: 1, scale: 1 }}
               className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6"
             >
-              <Card className="md:col-span-4 border-primary/10 bg-white/60 backdrop-blur-md">
+              <Card className="md:col-span-4 border-primary/10 bg-white/40 backdrop-blur-md">
                 <CardHeader className="p-4 md:p-6">
                   <CardTitle className="flex items-center gap-2 text-base md:text-lg">
                     <CalendarIcon className="w-4 h-4 md:w-5 md:h-5 text-primary" />
@@ -328,7 +328,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="md:col-span-8 border-primary/10 bg-white/60 backdrop-blur-md">
+              <Card className="md:col-span-8 border-primary/10 bg-white/40 backdrop-blur-md">
                 <CardHeader className="p-4 md:p-6">
                   <CardTitle className="text-base md:text-lg">
                     Tasks for {selectedDate ? format(selectedDate, "MMM do") : 'Selected Date'}

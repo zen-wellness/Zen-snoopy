@@ -77,7 +77,7 @@ export function TaskList({ date }: { date?: string }) {
   };
 
   return (
-    <Card className="h-full border-border/50 shadow-sm bg-white/60 backdrop-blur-md">
+    <Card className="h-full border-border/50 shadow-sm bg-white/40 backdrop-blur-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 md:pb-4">
         <div className="flex flex-col">
           <CardTitle className="text-lg md:text-xl font-serif font-medium">Today's Tasks</CardTitle>
