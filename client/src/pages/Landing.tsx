@@ -29,53 +29,55 @@ export default function Landing() {
   return (
     <div className="min-h-screen relative z-10 text-foreground flex flex-col overflow-x-hidden">
       {/* Navbar */}
-      <nav className="p-6 md:p-10 flex justify-between items-center max-w-7xl mx-auto w-full relative z-10">
+      <nav className="p-4 md:p-10 flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto w-full relative z-10 gap-4">
         <div className="flex items-center gap-2">
-          <img src={snoopyHeart} alt="Snoopy Heart" className="w-12 h-12 object-contain snoopy-float" />
-          <span className="text-2xl font-bold tracking-tight text-primary">Zen Snoopy</span>
+          <img src={snoopyHeart} alt="Snoopy Heart" className="w-10 h-10 md:w-12 md:h-12 object-contain snoopy-float" />
+          <span className="text-xl md:text-2xl font-bold tracking-tight text-primary">Zen Snoopy</span>
         </div>
-        <div className="flex gap-4 items-center">
-          <form onSubmit={handleSubmit} className="flex gap-2 items-end">
-            <div className="grid gap-1.5">
+        <div className="flex flex-col gap-4 items-center w-full md:w-auto">
+          <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-2 items-center md:items-end w-full">
+            <div className="grid gap-1.5 w-full md:w-auto">
               <Input 
                 type="email" 
                 placeholder="Email" 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-9 w-40"
+                className="h-9 w-full md:w-40"
               />
             </div>
-            <div className="grid gap-1.5">
+            <div className="grid gap-1.5 w-full md:w-auto">
               <Input 
                 type="password" 
                 placeholder="Password" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-9 w-40"
+                className="h-9 w-full md:w-40"
               />
             </div>
-            <div className="flex items-center space-x-2 mb-2">
-              <Checkbox 
-                id="remember" 
-                checked={rememberMe} 
-                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-              />
-              <Label htmlFor="remember" className="text-xs text-muted-foreground">Remember</Label>
+            <div className="flex items-center justify-between md:justify-start gap-4 w-full md:w-auto mt-2 md:mt-0 md:mb-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="remember" 
+                  checked={rememberMe} 
+                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                />
+                <Label htmlFor="remember" className="text-xs text-muted-foreground whitespace-nowrap">Remember</Label>
+              </div>
+              <Button 
+                type="submit"
+                variant="default" 
+                disabled={isLoggingIn || isRegistering}
+                className="rounded-full px-6 h-9 w-full md:w-auto"
+              >
+                {isLoginView ? (isLoggingIn ? "..." : "Sign In") : (isRegistering ? "..." : "Register")}
+              </Button>
             </div>
-            <Button 
-              type="submit"
-              variant="default" 
-              disabled={isLoggingIn || isRegistering}
-              className="rounded-full px-6 h-9"
-            >
-              {isLoginView ? (isLoggingIn ? "..." : "Sign In") : (isRegistering ? "..." : "Register")}
-            </Button>
           </form>
           <Button 
             variant="ghost" 
             size="sm"
             onClick={() => setIsLoginView(!isLoginView)}
-            className="text-xs"
+            className="text-xs -mt-2 md:mt-0"
           >
             {isLoginView ? "Need account?" : "Have account?"}
           </Button>
@@ -83,7 +85,7 @@ export default function Landing() {
       </nav>
 
       {/* Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-4xl mx-auto mt-10 md:mt-20 relative">
+      <main className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-4xl mx-auto mt-8 md:mt-20 relative">
         <div className="absolute -left-20 top-0 opacity-20 hidden lg:block">
            <img src={snoopyAviator} alt="Snoopy Aviator" className="w-48 h-48 object-contain -rotate-12" />
         </div>
@@ -100,21 +102,21 @@ export default function Landing() {
           <span className="inline-block px-4 py-1.5 rounded-full bg-secondary text-secondary-foreground text-sm font-medium tracking-wide">
             Glam up your sleep routine ✨
           </span>
-          <h1 className="text-5xl md:text-7xl font-bold leading-[1.1] text-primary">
+          <h1 className="text-4xl md:text-7xl font-bold leading-[1.1] text-primary">
             Sleep like Snoopy, <br />
             <span className="text-accent-foreground italic">glow every day.</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             The ultimate girly sanctuary for your sleep patterns, habits, and dreams. 
             Maintain a regular schedule with style and grace.
           </p>
           
-          <div className="pt-8">
+          <div className="pt-4 md:pt-8">
             <Button 
               size="lg" 
               onClick={() => setIsLoginView(!isLoginView)}
               disabled={isLoggingIn || isRegistering}
-              className="rounded-full px-10 py-8 text-xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 group"
+              className="rounded-full px-8 md:px-10 py-6 md:py-8 text-lg md:text-xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 group"
             >
               Start My Journey
               <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
