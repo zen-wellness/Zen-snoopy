@@ -48,6 +48,7 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
         for (const task of templateTasks) {
           await storage.createTask(user.id, {
             ...task,
+            userId: user.id, // Explicitly include userId to satisfy TS/LSP
             date: today,
             completed: false,
           });
