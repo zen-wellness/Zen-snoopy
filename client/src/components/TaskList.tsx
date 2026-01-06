@@ -4,15 +4,52 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TaskModal } from "@/components/TaskModal";
 import { Plus, Clock, Trash2 } from "lucide-react";
-import { format } from "date-fns";
+import { format, parse, subMinutes, isBefore, isAfter } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useEffect, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export function TaskList() {
   const today = format(new Date(), "yyyy-MM-dd");
   const { data: tasks, isLoading } = useTasks(today);
   const deleteTask = useDeleteTask();
   const updateTask = useUpdateTask();
+  const { toast } = useToast();
+  const notifiedTasks = useRef<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (!tasks) return;
+
+    const checkReminders = () => {
+      const now = new Date();
+      
+      tasks.forEach((task) => {
+        if (!task.startTime || task.completed || notifiedTasks.current.has(task.id)) return;
+
+        try {
+          const startTime = parse(task.startTime, "HH:mm", new Date());
+          const reminderTime = subMinutes(startTime, 5);
+
+          if (isAfter(now, reminderTime) && isBefore(now, startTime)) {
+            toast({
+              title: "🌸 Task Reminder!",
+              description: `"${task.title}" starts in 5 minutes (at ${task.startTime})! ✨`,
+              variant: "default",
+            });
+            notifiedTasks.current.add(task.id);
+          }
+        } catch (e) {
+          console.error("Failed to parse time for task:", task.title);
+        }
+      });
+    };
+
+    const interval = setInterval(checkReminders, 30000); // Check every 30 seconds
+    checkReminders(); // Initial check
+
+    return () => clearInterval(interval);
+  }, [tasks, toast]);
 
   const handleToggle = (id: number, completed: boolean) => {
     updateTask.mutate({ id, completed });
