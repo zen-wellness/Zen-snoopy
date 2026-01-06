@@ -222,7 +222,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Task Rows */}
+                {/* Task Grid Overlay */}
                 <div className="relative min-h-[400px]">
                   {/* Grid Lines */}
                   <div className="absolute inset-0 flex">
@@ -232,33 +232,40 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {/* Tasks */}
-                  <div className="relative py-4 space-y-2">
-                    {timelineTasks.map((task: any) => (
-                      <div key={task.id} className="flex group">
-                        <div className="w-20 flex-shrink-0" />
-                        <div className="flex-1 relative h-12">
-                          <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className={cn(
-                              "absolute h-10 top-1 rounded-lg border shadow-sm p-2 text-xs font-medium flex items-center justify-between overflow-hidden transition-all group-hover:shadow-md cursor-pointer",
-                              task.completed 
-                                ? "bg-muted/30 border-muted text-muted-foreground line-through" 
-                                : "bg-primary/20 border-primary/30 text-primary-foreground text-primary shadow-primary/10"
-                            )}
-                            style={{
-                              left: `${(task.startHour / 24) * 100}%`,
-                              width: `${(task.duration / 24) * 100}%`
-                            }}
-                            onClick={() => updateTask.mutate({ id: task.id, completed: !task.completed })}
-                          >
-                            <span className="truncate pr-2">{task.title}</span>
-                            <span className="text-[10px] opacity-60 whitespace-nowrap">{task.startTime}</span>
-                          </motion.div>
-                        </div>
-                      </div>
-                    ))}
+                  {/* Tasks Container */}
+                  <div className="relative h-[600px] py-4">
+                    <AnimatePresence>
+                      {timelineTasks.map((task: any) => (
+                        <motion.div
+                          key={task.id}
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className={cn(
+                            "absolute h-[50px] rounded-lg border shadow-sm p-3 text-sm font-medium flex flex-col justify-center overflow-hidden transition-all hover:shadow-lg hover:z-50 cursor-pointer",
+                            task.completed 
+                              ? "bg-muted/30 border-muted text-muted-foreground line-through" 
+                              : "bg-white border-primary/20 text-primary shadow-primary/5 hover:border-primary/40"
+                          )}
+                          style={{
+                            left: `calc(5rem + ${(task.startHour / 24) * 100}%)`,
+                            width: `${(task.duration / 24) * 100}%`,
+                            top: `${(task.id % 10) * 55 + 20}px`, // Simple vertical offset to prevent overlap
+                            minWidth: "120px"
+                          }}
+                          onClick={() => updateTask.mutate({ id: task.id, completed: !task.completed })}
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            {!task.completed && <Sparkles className="w-3 h-3 text-accent-foreground flex-shrink-0" />}
+                            <span className="truncate font-bold">{task.title}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-[10px] opacity-70 mt-0.5">
+                            <Clock className="w-3 h-3" />
+                            <span>{task.startTime} - {task.endTime}</span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
                   </div>
                 </div>
               </div>
