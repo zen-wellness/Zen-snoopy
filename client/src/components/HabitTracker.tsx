@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export function HabitTracker() {
+  const { user } = useAuth();
   const { data: habits, isLoading } = useHabits();
   const createHabit = useCreateHabit();
   const deleteHabit = useDeleteHabit();
@@ -23,9 +24,10 @@ export function HabitTracker() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newHabitTitle.trim()) return;
+    if (!newHabitTitle.trim() || !user) return;
     
     await createHabit.mutateAsync({
+      userId: user.uid,
       title: newHabitTitle,
       description: "",
     });
