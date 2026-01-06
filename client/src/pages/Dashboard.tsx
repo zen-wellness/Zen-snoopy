@@ -222,46 +222,73 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Task Grid Overlay */}
-                <div className="relative min-h-[400px]">
-                  {/* Grid Lines */}
-                  <div className="absolute inset-0 flex">
-                    <div className="w-20 border-r border-primary/10 bg-primary/5" />
-                    <div className="flex-1 grid grid-cols-24">
-                      {hours.map(h => <div key={h} className="border-r border-primary/5" />)}
-                    </div>
+                {/* Vertical Timeline Layout */}
+                <div className="relative flex min-h-[1200px]">
+                  {/* Time Axis (Left) */}
+                  <div className="w-20 flex-shrink-0 border-r border-primary/10 bg-primary/5 relative">
+                    {hours.map(h => (
+                      <div 
+                        key={h} 
+                        className="absolute w-full text-center text-[10px] font-bold text-primary border-t border-primary/5"
+                        style={{ top: `${(h / 24) * 100}%`, height: `${(1 / 24) * 100}%` }}
+                      >
+                        <span className="relative -top-2 bg-primary/5 px-1 rounded">
+                          {h === 0 ? '12 AM' : h < 12 ? `${h} AM` : h === 12 ? '12 PM' : `${h-12} PM`}
+                        </span>
+                      </div>
+                    ))}
                   </div>
 
-                  {/* Tasks Container */}
-                  <div className="relative h-[600px] py-4">
+                  {/* Tasks Content (Right) */}
+                  <div className="flex-1 relative bg-white/40">
+                    {/* Horizontal Grid Lines */}
+                    {hours.map(h => (
+                      <div 
+                        key={h} 
+                        className="absolute w-full border-t border-primary/5"
+                        style={{ top: `${(h / 24) * 100}%` }}
+                      />
+                    ))}
+
                     <AnimatePresence>
                       {timelineTasks.map((task: any) => (
                         <motion.div
                           key={task.id}
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
                           className={cn(
-                            "absolute h-[50px] rounded-lg border shadow-sm p-3 text-sm font-medium flex flex-col justify-center overflow-hidden transition-all hover:shadow-lg hover:z-50 cursor-pointer",
+                            "absolute left-4 right-4 rounded-xl border shadow-sm p-4 text-sm font-medium flex flex-col justify-center overflow-hidden transition-all hover:shadow-xl hover:z-50 cursor-pointer group",
                             task.completed 
                               ? "bg-muted/30 border-muted text-muted-foreground line-through" 
                               : "bg-white border-primary/20 text-primary shadow-primary/5 hover:border-primary/40"
                           )}
                           style={{
-                            left: `calc(5rem + ${(task.startHour / 24) * 100}%)`,
-                            width: `${(task.duration / 24) * 100}%`,
-                            top: `${(task.id % 10) * 55 + 20}px`, // Simple vertical offset to prevent overlap
-                            minWidth: "120px"
+                            top: `${(task.startHour / 24) * 100}%`,
+                            height: `calc(${(task.duration / 24) * 100}% - 4px)`,
+                            minHeight: "60px"
                           }}
                           onClick={() => updateTask.mutate({ id: task.id, completed: !task.completed })}
                         >
-                          <div className="flex items-center gap-2 truncate">
-                            {!task.completed && <Sparkles className="w-3 h-3 text-accent-foreground flex-shrink-0" />}
-                            <span className="truncate font-bold">{task.title}</span>
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2 truncate">
+                              {!task.completed && <Sparkles className="w-4 h-4 text-accent-foreground animate-pulse" />}
+                              <span className="truncate font-bold text-lg">{task.title}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-xs font-semibold bg-primary/5 px-2 py-1 rounded-full whitespace-nowrap">
+                              <Clock className="w-3 h-3" />
+                              <span>{task.startTime} - {task.endTime}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1 text-[10px] opacity-70 mt-0.5">
-                            <Clock className="w-3 h-3" />
-                            <span>{task.startTime} - {task.endTime}</span>
+                          {task.description && (
+                            <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                              {task.description}
+                            </p>
+                          )}
+                          <div className="absolute right-2 bottom-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button size="sm" variant="ghost" className="h-8 text-[10px] rounded-full">
+                              {task.completed ? "Mark Incomplete" : "Complete Task"}
+                            </Button>
                           </div>
                         </motion.div>
                       ))}
