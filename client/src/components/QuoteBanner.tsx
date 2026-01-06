@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
+import { useMemo } from "react";
 
 const QUOTES = [
   { text: "The mind is everything. What you think you become.", author: "Buddha" },
@@ -7,11 +8,17 @@ const QUOTES = [
   { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
   { text: "He who has a why to live can bear almost any how.", author: "Friedrich Nietzsche" },
   { text: "Do less, be more.", author: "Unknown" },
+  { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+  { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+  { text: "Everything has beauty, but not everyone sees it.", author: "Confucius" },
+  { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+  { text: "What you get by achieving your goals is not as important as what you become by achieving your goals.", author: "Zig Ziglar" },
 ];
 
 export function QuoteBanner() {
-  // Simple random quote for now. In a real app, this could cycle daily.
-  const randomQuote = QUOTES[new Date().getDate() % QUOTES.length];
+  const randomQuote = useMemo(() => {
+    return QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  }, []);
 
   return (
     <motion.div 

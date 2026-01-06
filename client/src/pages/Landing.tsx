@@ -112,11 +112,11 @@ export default function Landing() {
           <div className="pt-8">
             <Button 
               size="lg" 
-              onClick={() => login()}
-              disabled={isLoggingIn}
+              onClick={() => setIsLoginView(!isLoginView)}
+              disabled={isLoggingIn || isRegistering}
               className="rounded-full px-10 py-8 text-xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 group"
             >
-              {isLoggingIn ? "Starting..." : "Start My Journey"}
+              Start My Journey
               <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
