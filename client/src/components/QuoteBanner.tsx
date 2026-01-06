@@ -54,7 +54,7 @@ export function QuoteBanner() {
               </h2>
               <p className="mt-2 text-sm font-sans font-medium text-muted-foreground uppercase tracking-widest">
                 — {quote.author}
-              </author>
+              </p>
             </motion.div>
           </AnimatePresence>
         </div>
