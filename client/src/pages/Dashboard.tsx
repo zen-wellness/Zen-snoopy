@@ -96,9 +96,8 @@ export default function Dashboard() {
   }, [timelineTasks]);
 
   return (
-    <div className="min-h-screen p-4 md:p-8 relative z-10">
-      {/* Header */}
-      <header className="max-w-7xl mx-auto mb-8 flex items-center justify-between">
+    <div className="min-h-screen p-4 md:p-8 relative z-10 flex flex-col">
+      <header className="max-w-7xl w-full mx-auto mb-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg shadow-primary/10 snoopy-float overflow-hidden border-2 border-primary/20">
             <img src={snoopyStanding} alt="Snoopy" className="w-10 h-10 object-contain" />

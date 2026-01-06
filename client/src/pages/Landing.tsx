@@ -10,7 +10,7 @@ export default function Landing() {
   const { login, isLoggingIn } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden">
+    <div className="min-h-screen relative z-10 text-foreground flex flex-col overflow-x-hidden">
       {/* Navbar */}
       <nav className="p-6 md:p-10 flex justify-between items-center max-w-7xl mx-auto w-full relative z-10">
         <div className="flex items-center gap-2">
@@ -103,7 +103,7 @@ function FeatureCard({ icon, title, description, delay }: { icon: React.ReactNod
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay }}
-      className="p-8 rounded-3xl bg-white border border-primary/10 shadow-sm hover:shadow-md transition-shadow text-left"
+      className="p-8 rounded-3xl bg-white/60 backdrop-blur-md border border-primary/10 shadow-sm hover:shadow-md transition-shadow text-left"
     >
       <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center mb-6">
         {icon}

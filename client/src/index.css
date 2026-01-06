@@ -35,8 +35,8 @@
   body {
     @apply bg-background text-foreground;
     background-image: 
-      linear-gradient(rgba(255, 240, 246, 0.7), rgba(255, 240, 246, 0.7)),
-      url('/attached_assets/stock_images/cute_snoopy_aestheti_30ffb306.jpg');
+      linear-gradient(rgba(255, 240, 246, 0.6), rgba(255, 240, 246, 0.6)),
+      url('/attached_assets/stock_images/adorable_cute_snoopy_4c0caec3.jpg');
     background-attachment: fixed;
     background-size: cover;
     background-position: center;
