@@ -1,4 +1,5 @@
 import { useHabits, useCreateHabit, useDeleteHabit, useLogHabit } from "@/hooks/use-habits";
+import { useAuth } from "@/hooks/use-auth";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Check, Flame } from "lucide-react";
