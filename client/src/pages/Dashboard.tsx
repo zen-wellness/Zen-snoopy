@@ -277,7 +277,7 @@ export default function Dashboard() {
                             </div>
                             <div className="flex items-center gap-1 text-xs font-semibold bg-primary/5 px-2 py-1 rounded-full whitespace-nowrap">
                               <Clock className="w-3 h-3" />
-                              <span>{task.startTime} - {task.endTime}</span>
+                              <span>{format(parse(task.startTime, "HH:mm", new Date()), "h:mm a")} - {format(parse(task.endTime, "HH:mm", new Date()), "h:mm a")}</span>
                             </div>
                           </div>
                           {task.description && (
