@@ -70,12 +70,9 @@ export function useAuth() {
           await signInWithPopup(auth, provider);
         } catch (popupError: any) {
           console.error("Popup failed, error code:", popupError.code, "message:", popupError.message);
-          if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/cancelled-popup-request' || popupError.code === 'auth/unauthorized-domain') {
-            console.log("Attempting sign-in with redirect fallback...");
-            await signInWithRedirect(auth, provider);
-          } else {
-            throw popupError;
-          }
+          // Force redirect for unauthorized-domain too so user can see it works on the authorized one
+          console.log("Attempting sign-in with redirect fallback...");
+          await signInWithRedirect(auth, provider);
         }
       } catch (error: any) {
         console.error("Firebase Sign-in error:", error);
