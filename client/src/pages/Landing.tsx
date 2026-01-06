@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Moon, Sparkles, Heart } from "lucide-react";
 import { motion } from "framer-motion";
+import snoopyHeart from "@assets/IMG_0317_1767672528677.png";
+import snoopyAviator from "@assets/IMG_0318_1767672528678.png";
+import snoopyRoof from "@assets/IMG_0319_1767672528678.png";
 
 export default function Landing() {
   const handleLogin = () => {
@@ -8,31 +11,36 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden">
       {/* Navbar */}
-      <nav className="p-6 md:p-10 flex justify-between items-center max-w-7xl mx-auto w-full">
+      <nav className="p-6 md:p-10 flex justify-between items-center max-w-7xl mx-auto w-full relative z-10">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white snoopy-float">
-            <Moon size={20} />
-          </div>
+          <img src={snoopyHeart} alt="Snoopy Heart" className="w-12 h-12 object-contain snoopy-float" />
           <span className="text-2xl font-bold tracking-tight text-primary">Zen Snoopy</span>
         </div>
         <Button 
           variant="outline" 
           onClick={handleLogin}
-          className="rounded-full px-6 border-primary/20 hover:bg-primary/10 hover:text-primary"
+          className="rounded-full px-6 border-primary/20 hover:bg-primary/10 hover:text-primary bg-white/50 backdrop-blur-sm"
         >
           Sweet Dreams Sign In
         </Button>
       </nav>
 
       {/* Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-4xl mx-auto mt-10 md:mt-20">
+      <main className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-4xl mx-auto mt-10 md:mt-20 relative">
+        <div className="absolute -left-20 top-0 opacity-20 hidden lg:block">
+           <img src={snoopyAviator} alt="Snoopy Aviator" className="w-48 h-48 object-contain -rotate-12" />
+        </div>
+        <div className="absolute -right-20 bottom-0 opacity-20 hidden lg:block">
+           <img src={snoopyRoof} alt="Snoopy Roof" className="w-48 h-48 object-contain rotate-12" />
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="space-y-6"
+          className="space-y-6 relative z-10"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-secondary text-secondary-foreground text-sm font-medium tracking-wide">
             Glam up your sleep routine ✨

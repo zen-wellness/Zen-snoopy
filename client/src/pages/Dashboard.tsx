@@ -4,8 +4,9 @@ import { TaskList } from "@/components/TaskList";
 import { HabitTracker } from "@/components/HabitTracker";
 import { DailyJournal } from "@/components/DailyJournal";
 import { Button } from "@/components/ui/button";
-import { LogOut, Moon, Sparkles } from "lucide-react";
+import { LogOut, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import snoopyStanding from "@assets/IMG_0320_1767672528678.jpeg";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -15,8 +16,8 @@ export default function Dashboard() {
       {/* Header */}
       <header className="max-w-7xl mx-auto mb-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20 snoopy-float">
-            <Moon size={24} />
+          <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg shadow-primary/10 snoopy-float overflow-hidden border-2 border-primary/20">
+            <img src={snoopyStanding} alt="Snoopy" className="w-10 h-10 object-contain" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
