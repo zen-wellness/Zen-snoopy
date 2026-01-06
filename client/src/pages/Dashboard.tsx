@@ -22,7 +22,7 @@ export default function Dashboard() {
   const { data: tasks } = useTasks(dateStr);
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8 relative z-10">
       {/* Header */}
       <header className="max-w-7xl mx-auto mb-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
