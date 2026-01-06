@@ -38,3 +38,10 @@ externalPort = 80
 deploymentTarget = "autoscale"
 run = ["node", "./dist/index.cjs"]
 build = ["npm", "run", "build"]
+
+[userenv]
+
+[userenv.shared]
+FIREBASE_CLIENT_EMAIL = "firebase-adminsdk-fbsvc@zen-task-ec5e5.iam.gserviceaccount.com"
+FIREBASE_PRIVATE_KEY = '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCdWIXtdLMTC1W6\nqQGurL7jR4So+rqZaeS+lW7ZWMkyj5sE2423WRBWl/NcpedzaDiX9xcL6ieLB0aN\nR9nvQ1lJe1AB2y68L8xr8zlX8LKAz5zX5NcQm4T6O7Piv3QvpAZNfayA+2tGNXK1\nmeh2kyFE+1rptvGNgJHcRcUuTbdWNL0IVcVwgW4i3ZgQxsMdhLJcpLlL/ek7DFQF\nlX574qux+FHSOzXqrE7IOVoUalK7d6lW5B5JVELEmF97nhQlTiTKRmABaOUEjOG9\niBXi58AmdImvfdn24a+o7wW8u5nnxeKb9zSkpO+qiXz5LMjx9cJ1uDoYooMylhpj\n5bjNH9TxAgMBAAECggEACvvmBYiTA65T4r7vliELBl...[Truncated]'
+VITE_FIREBASE_PROJECT_ID = "zen-task-ec5e5"
