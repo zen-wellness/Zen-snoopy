@@ -13,6 +13,12 @@ const firebaseConfig = {
   measurementId: "G-7NMJT2468G"
 };
 
+// Debug log to confirm which project is being used
+if (typeof window !== "undefined") {
+  console.log("Firebase initialized with project:", firebaseConfig.projectId);
+  console.log("Current hostname:", window.location.hostname);
+}
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
