@@ -23,9 +23,20 @@ export function useAuth() {
     getRedirectResult(auth).then((result) => {
       if (result?.user) {
         setUser(result.user);
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in via redirect.",
+        });
       }
     }).catch((error) => {
       console.error("Redirect result error:", error);
+      if (error.code !== 'auth/internal-error') { // Ignore common noise
+        toast({
+          title: "Login Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     });
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -37,7 +48,7 @@ export function useAuth() {
       }
     });
     return () => unsubscribe();
-  }, [queryClient]);
+  }, [queryClient, toast]);
 
   const loginMutation = useMutation({
     mutationFn: async () => {
