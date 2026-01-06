@@ -29,7 +29,9 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
     (req as any).user = { uid: user.id, email: user.email, name: user.displayName };
     
     // Check if the user needs their template schedule for today
-    const today = new Date().toLocaleDateString('en-CA');
+    const now = new Date();
+    // Use a more robust way to get today's date in local time or consistent format
+    const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
     const tasksData = await storage.getTasks(user.id);
     const hasTasksForToday = tasksData.some(t => t.date === today);
 

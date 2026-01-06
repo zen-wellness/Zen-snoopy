@@ -73,7 +73,7 @@ export class DatabaseStorage implements IStorage {
     for (let i = -1; i < 30; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
       for (const task of templateTasks) {
         await db.insert(tasks).values({
           userId: newUser.id,
