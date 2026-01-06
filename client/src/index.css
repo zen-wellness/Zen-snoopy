@@ -38,7 +38,8 @@
       linear-gradient(rgba(255, 240, 246, 0.4), rgba(255, 240, 246, 0.4)),
       url('@assets/IMG_0336_1767718090891.jpeg');
     background-attachment: fixed;
-    background-size: cover;
+    background-size: contain;
+    background-repeat: repeat;
     background-position: center;
     font-family: var(--font-sans);
   }
