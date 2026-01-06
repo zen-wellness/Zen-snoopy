@@ -78,35 +78,34 @@ export function TaskList({ date }: { date?: string }) {
 
   return (
     <Card className="h-full border-border/50 shadow-sm bg-white/60 backdrop-blur-md">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 md:pb-4">
         <div className="flex flex-col">
-          <CardTitle className="text-xl font-serif font-medium">Today's Tasks</CardTitle>
-          <p className="text-xs text-muted-foreground font-medium mt-1">{format(new Date(), "EEEE, MMMM do")}</p>
+          <CardTitle className="text-lg md:text-xl font-serif font-medium">Today's Tasks</CardTitle>
+          <p className="text-[10px] md:text-xs text-muted-foreground font-medium mt-0.5 md:mt-1">{format(new Date(), "EEEE, MMM do")}</p>
         </div>
         <TaskModal defaultDate={today}>
-          <Button size="sm" className="bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary border-none shadow-none">
-            <Plus className="h-4 w-4 mr-1" /> Add Task
+          <Button size="sm" className="bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary border-none shadow-none h-8 text-xs">
+            <Plus className="h-3 w-3 mr-1" /> Add
           </Button>
         </TaskModal>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="p-2 md:p-6 pt-0 space-y-3 md:space-y-4">
         {isLoading ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-14 w-full bg-muted/50 rounded-lg animate-pulse" />
+              <div key={i} className="h-12 w-full bg-muted/50 rounded-lg animate-pulse" />
             ))}
           </div>
         ) : tasks?.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-10 text-muted-foreground/60 border border-dashed border-border rounded-xl">
-            <div className="bg-muted/30 p-3 rounded-full mb-3">
-              <CheckIcon className="w-5 h-5" />
+          <div className="flex flex-col items-center justify-center py-6 md:py-10 text-muted-foreground/60 border border-dashed border-border rounded-xl">
+            <div className="bg-muted/30 p-2 rounded-full mb-2">
+              <CheckIcon className="w-4 h-4" />
             </div>
-            <p className="text-sm font-medium">All caught up!</p>
-            <p className="text-xs">Take a moment to breathe.</p>
+            <p className="text-xs font-medium">All caught up!</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2 md:space-y-3">
             <AnimatePresence mode="popLayout">
               {tasks?.map((task) => (
                 <motion.div
@@ -116,50 +115,50 @@ export function TaskList({ date }: { date?: string }) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   className={cn(
-                    "group relative flex items-start gap-3 p-4 rounded-xl border transition-all duration-300",
+                    "group relative flex items-start gap-2 md:gap-3 p-3 md:p-4 rounded-xl border transition-all duration-300",
                     task.completed 
                       ? "bg-muted/20 border-border/50 opacity-60" 
-                      : "bg-background border-border hover:shadow-md hover:border-primary/20"
+                      : "bg-background border-border hover:shadow-md"
                   )}
                 >
                   <Checkbox 
                     checked={task.completed} 
                     onCheckedChange={(checked) => handleToggle(task.id, checked as boolean)}
-                    className="mt-1 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    className="mt-0.5 md:mt-1 h-4 w-4 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
                   
                   <div className="flex-1 min-w-0">
                     <p className={cn(
-                      "font-medium truncate transition-all",
+                      "font-medium text-sm md:text-base truncate transition-all",
                       task.completed ? "line-through text-muted-foreground" : "text-foreground"
                     )}>
                       {task.title}
                     </p>
                     
                     {(task.description || task.startTime) && (
-                      <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2 mt-1 text-[10px] md:text-xs text-muted-foreground">
                         {task.startTime && (
-                          <span className="flex items-center gap-1 bg-muted/50 px-1.5 py-0.5 rounded">
-                            <Clock className="w-3 h-3" />
-                            {task.startTime} {task.endTime && `- ${task.endTime}`}
+                          <span className="flex items-center gap-1 bg-muted/50 px-1 py-0.5 rounded">
+                            <Clock className="w-2.5 h-2.5" />
+                            {task.startTime}
                           </span>
                         )}
                         {task.description && (
-                          <span className="truncate max-w-[200px]">{task.description}</span>
+                          <span className="truncate max-w-[150px] md:max-w-[200px]">{task.description}</span>
                         )}
                       </div>
                     )}
                   </div>
 
-                  <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <TaskModal task={task}>
-                      <button className="text-xs text-primary hover:underline mr-3 font-medium">Edit</button>
+                      <button className="text-[10px] md:text-xs text-primary hover:underline mr-2 md:mr-3 font-medium">Edit</button>
                     </TaskModal>
                     <button 
                       onClick={() => deleteTask.mutate(task.id)}
                       className="text-muted-foreground hover:text-destructive transition-colors"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     </button>
                   </div>
                 </motion.div>
