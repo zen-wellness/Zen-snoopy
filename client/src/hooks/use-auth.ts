@@ -19,18 +19,32 @@ export function useAuth() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("Auth state changed:", user?.uid);
+      setUser(user);
+      setIsLoading(false);
+      if (user) {
+         queryClient.invalidateQueries();
+      }
+    }, (error) => {
+      console.error("Auth state error:", error);
+      setIsLoading(false);
+    });
+
     // Check for redirect result on mount
     getRedirectResult(auth).then((result) => {
       if (result?.user) {
+        console.log("Redirect success:", result.user.uid);
         setUser(result.user);
         toast({
           title: "Welcome back!",
-          description: "Successfully signed in via redirect.",
+          description: "Successfully signed in.",
         });
       }
     }).catch((error) => {
-      console.error("Redirect result error:", error);
-      if (error.code !== 'auth/internal-error') { // Ignore common noise
+      console.error("Redirect error:", error);
+      // Only show error if it's not a common expected one
+      if (error.code !== 'auth/internal-error') {
         toast({
           title: "Login Error",
           description: error.message,
@@ -39,14 +53,6 @@ export function useAuth() {
       }
     });
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setIsLoading(false);
-      // Invalidate queries when auth state changes
-      if (user) {
-         queryClient.invalidateQueries();
-      }
-    });
     return () => unsubscribe();
   }, [queryClient, toast]);
 
@@ -58,8 +64,16 @@ export function useAuth() {
           prompt: 'select_account'
         });
         
-        // Force redirect to avoid popup blockers and "stuck" states in iframes
-        await signInWithRedirect(auth, provider);
+        // Use popup by default, with redirect fallback
+        try {
+          await signInWithPopup(auth, provider);
+        } catch (popupError: any) {
+          if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/cancelled-popup-request') {
+            await signInWithRedirect(auth, provider);
+          } else {
+            throw popupError;
+          }
+        }
       } catch (error: any) {
         console.error("Firebase Sign-in error:", error);
         throw error;

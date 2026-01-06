@@ -21,7 +21,7 @@ export default function Dashboard() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-              Welcome back, {user?.firstName || 'Princess'} <Sparkles className="w-5 h-5 text-accent-foreground" />
+              Welcome back, {user?.displayName?.split(' ')[0] || 'Princess'} <Sparkles className="w-5 h-5 text-accent-foreground" />
             </h1>
             <p className="text-sm text-muted-foreground">Keep that glow and maintain your sleep schedule! ✨</p>
           </div>

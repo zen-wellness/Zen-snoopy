@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import Landing from "@/pages/Landing";
@@ -16,8 +16,14 @@ function Router() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-12 w-12 animate-spin text-primary" />
-          <p className="text-xl text-primary font-bold animate-pulse">Getting glammed up... ✨</p>
+          <div className="relative">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Sparkles className="h-6 w-6 text-accent-foreground animate-pulse" />
+            </div>
+          </div>
+          <p className="text-2xl text-primary font-bold animate-pulse">Getting glammed up... ✨</p>
+          <p className="text-sm text-muted-foreground italic">Almost ready for your glow-up!</p>
         </div>
       </div>
     );
