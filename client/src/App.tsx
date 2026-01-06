@@ -14,8 +14,8 @@ function Router() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="flex flex-col items-center gap-4">
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center gap-4 bg-white/30 backdrop-blur-lg p-8 rounded-2xl border border-white/20 shadow-xl">
           <div className="relative">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
             <div className="absolute inset-0 flex items-center justify-center">

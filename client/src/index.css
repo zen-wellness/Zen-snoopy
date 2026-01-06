@@ -35,8 +35,8 @@
   body {
     @apply bg-background text-foreground;
     background-image: 
-      linear-gradient(rgba(255, 240, 246, 0.6), rgba(255, 240, 246, 0.6)),
-      url('/attached_assets/stock_images/adorable_cute_snoopy_4c0caec3.jpg');
+      linear-gradient(rgba(255, 240, 246, 0.4), rgba(255, 240, 246, 0.4)),
+      url('/attached_assets/IMG_0336_1767706101642.jpeg');
     background-attachment: fixed;
     background-size: cover;
     background-position: center;
@@ -46,6 +46,15 @@
   /* Make sure background shows in all modes */
   #root, .min-h-screen {
     background-color: transparent !important;
+  }
+
+  /* Universal transparency for cards and containers */
+  .bg-card {
+    @apply bg-white/40 backdrop-blur-md !important;
+  }
+  
+  .bg-background {
+    @apply bg-transparent !important;
   }
 }
 
