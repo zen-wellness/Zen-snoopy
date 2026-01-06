@@ -66,9 +66,12 @@ export function useAuth() {
         
         // Use popup by default, with redirect fallback
         try {
+          console.log("Attempting sign-in with popup...");
           await signInWithPopup(auth, provider);
         } catch (popupError: any) {
-          if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/cancelled-popup-request') {
+          console.error("Popup failed, error code:", popupError.code, "message:", popupError.message);
+          if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/cancelled-popup-request' || popupError.code === 'auth/unauthorized-domain') {
+            console.log("Attempting sign-in with redirect fallback...");
             await signInWithRedirect(auth, provider);
           } else {
             throw popupError;

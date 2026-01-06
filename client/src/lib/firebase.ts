@@ -16,11 +16,5 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
-
-// Allow persistence but don't let it block
-setPersistence(auth, browserLocalPersistence).catch((err) => {
-  console.error("Firebase persistence error:", err);
-});
-
 export const db = getFirestore(app);
 export default app;
