@@ -41,10 +41,23 @@ export function TaskList({ date }: { date?: string }) {
           if (isAfter(now, reminderTime) && isBefore(now, startTime)) {
             // Browser Notification
             if ("Notification" in window && Notification.permission === "granted") {
-              new Notification("🌸 Task Reminder!", {
-                body: `"${task.title}" starts in 5 minutes (at ${task.startTime})! ✨`,
-                icon: "/attached_assets/IMG_0320_1767672528678.jpeg"
-              });
+              const registration = navigator.serviceWorker?.controller;
+              if (registration) {
+                // Use Service Worker for better PWA notification support
+                navigator.serviceWorker.ready.then((reg) => {
+                  reg.showNotification("🌸 Task Reminder!", {
+                    body: `"${task.title}" starts in 5 minutes (at ${task.startTime})! ✨`,
+                    icon: "/attached_assets/IMG_0336_1767718090891.jpeg",
+                    badge: "/attached_assets/IMG_0336_1767718090891.jpeg",
+                    vibrate: [200, 100, 200]
+                  });
+                });
+              } else {
+                new Notification("🌸 Task Reminder!", {
+                  body: `"${task.title}" starts in 5 minutes (at ${task.startTime})! ✨`,
+                  icon: "/attached_assets/IMG_0336_1767718090891.jpeg"
+                });
+              }
             }
 
             // Fallback Toast

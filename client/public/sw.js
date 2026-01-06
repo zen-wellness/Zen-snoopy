@@ -15,15 +15,19 @@ self.addEventListener('install', (event: any) => {
   );
 });
 
-self.addEventListener('fetch', (event: any) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
+self.addEventListener('push', (event) => {
+  const data = event.data?.json() ?? {};
+  const options = {
+    body: data.body || 'Task Reminder!',
+    icon: '/attached_assets/IMG_0336_1767718090891.jpeg',
+    badge: '/attached_assets/IMG_0336_1767718090891.jpeg',
+    vibrate: [200, 100, 200],
+    data: { url: '/' }
+  };
+  event.waitUntil(self.registration.showNotification(data.title || '🌸 Zen Snoopy', options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(clients.openWindow(event.notification.data.url));
 });
