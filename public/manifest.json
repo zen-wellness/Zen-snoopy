@@ -1,0 +1,17 @@
+{
+  "name": "Zen Snoopy",
+  "short_name": "Zen Snoopy",
+  "description": "Girly Snoopy-themed sleep and habit tracker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff0f6",
+  "theme_color": "#ff69b4",
+  "icons": [
+    {
+      "src": "/attached_assets/IMG_0320_1767672528678.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
