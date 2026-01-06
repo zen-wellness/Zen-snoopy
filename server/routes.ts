@@ -18,12 +18,42 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
     (req as any).user = decodedToken;
     
     // Ensure user exists in our DB
-    await storage.createUser({
+    const user = await storage.createUser({
       id: decodedToken.uid,
       email: decodedToken.email,
       displayName: decodedToken.name,
       photoURL: decodedToken.picture,
     });
+
+    // Check if the user needs their template schedule for today
+    const today = new Date().toISOString().split('T')[0];
+    const tasks = await storage.getTasks(user.id);
+    const hasTasksForToday = tasks.some(t => t.date === today);
+
+    if (!hasTasksForToday) {
+      const templateTasks = [
+        { title: "Sleep", startTime: "02:00", endTime: "08:00" },
+        { title: "School prep", startTime: "08:01", endTime: "09:30" },
+        { title: "Sleep/Journal/Alone time", startTime: "09:31", endTime: "12:00" },
+        { title: "Mommy duties", startTime: "12:01", endTime: "17:00" },
+        { title: "Gaming time", startTime: "17:01", endTime: "19:00" },
+        { title: "Homework time", startTime: "19:01", endTime: "20:00" },
+        { title: "Time to clean that ass", startTime: "20:01", endTime: "21:00" },
+        { title: "Show time", startTime: "21:01", endTime: "23:00" },
+        { title: "Gaming time", startTime: "23:01", endTime: "02:00" },
+      ];
+
+      const day = new Date().getDay();
+      if (day >= 1 && day <= 5) {
+        for (const task of templateTasks) {
+          await storage.createTask(user.id, {
+            ...task,
+            date: today,
+            completed: false,
+          });
+        }
+      }
+    }
 
     next();
   } catch (error) {
