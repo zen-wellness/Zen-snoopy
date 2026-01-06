@@ -70,7 +70,7 @@ export class DatabaseStorage implements IStorage {
 
     const today = new Date();
     // Add tasks for the next 30 days
-    for (let i = 0; i < 30; i++) {
+    for (let i = -1; i < 30; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       const dateStr = date.toISOString().split('T')[0];
