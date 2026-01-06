@@ -32,61 +32,34 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
     const now = new Date();
     const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
     
-    // Check if the user has any tasks at all, not just for today
     const allTasks = await storage.getTasks(user.id);
-    const hasAnyTasks = allTasks.length > 0;
+    
+    const templateTasks = [
+      { title: "Sleep", startTime: "02:00", endTime: "08:00" },
+      { title: "School prep", startTime: "08:01", endTime: "09:30" },
+      { title: "Sleep/Journal/Alone time", startTime: "09:31", endTime: "12:00" },
+      { title: "Mommy duties", startTime: "12:01", endTime: "17:00" },
+      { title: "Gaming time", startTime: "17:01", endTime: "19:00" },
+      { title: "Homework time", startTime: "19:01", endTime: "20:00" },
+      { title: "Time to clean that ass", startTime: "20:01", endTime: "21:00" },
+      { title: "Show time", startTime: "21:01", endTime: "23:00" },
+      { title: "Gaming time", startTime: "23:01", endTime: "02:00" },
+    ];
 
-    if (!hasAnyTasks) {
-      console.log(`SEEDING INITIAL TASKS FOR USER ${user.id}`);
-      const templateTasks = [
-        { title: "Sleep", startTime: "02:00", endTime: "08:00" },
-        { title: "School prep", startTime: "08:01", endTime: "09:30" },
-        { title: "Sleep/Journal/Alone time", startTime: "09:31", endTime: "12:00" },
-        { title: "Mommy duties", startTime: "12:01", endTime: "17:00" },
-        { title: "Gaming time", startTime: "17:01", endTime: "19:00" },
-        { title: "Homework time", startTime: "19:01", endTime: "20:00" },
-        { title: "Time to clean that ass", startTime: "20:01", endTime: "21:00" },
-        { title: "Show time", startTime: "21:01", endTime: "23:00" },
-        { title: "Gaming time", startTime: "23:01", endTime: "02:00" },
-      ];
+    // Seed for today and next 7 days if missing
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(now);
+      date.setDate(now.getDate() + i);
+      const dateStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
       
-      // Seed for today and next 30 days
-      for (let i = 0; i < 30; i++) {
-        const date = new Date(now);
-        date.setDate(now.getDate() + i);
-        const dateStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
-        
+      const hasTasksForDate = allTasks.some(t => t.date === dateStr);
+      if (!hasTasksForDate) {
+        console.log(`SEEDING TASKS FOR USER ${user.id} ON ${dateStr}`);
         for (const task of templateTasks) {
           await storage.createTask(user.id, {
             ...task,
             userId: user.id,
             date: dateStr,
-            completed: false,
-          });
-        }
-      }
-    } else {
-      // If they have tasks but not for today, seed today specifically
-      const hasTasksForToday = allTasks.some(t => t.date === today);
-      if (!hasTasksForToday) {
-        console.log(`SEEDING TODAY'S TASKS FOR USER ${user.id}`);
-        const templateTasks = [
-          { title: "Sleep", startTime: "02:00", endTime: "08:00" },
-          { title: "School prep", startTime: "08:01", endTime: "09:30" },
-          { title: "Sleep/Journal/Alone time", startTime: "09:31", endTime: "12:00" },
-          { title: "Mommy duties", startTime: "12:01", endTime: "17:00" },
-          { title: "Gaming time", startTime: "17:01", endTime: "19:00" },
-          { title: "Homework time", startTime: "19:01", endTime: "20:00" },
-          { title: "Time to clean that ass", startTime: "20:01", endTime: "21:00" },
-          { title: "Show time", startTime: "21:01", endTime: "23:00" },
-          { title: "Gaming time", startTime: "23:01", endTime: "02:00" },
-        ];
-        
-        for (const task of templateTasks) {
-          await storage.createTask(user.id, {
-            ...task,
-            userId: user.id,
-            date: today,
             completed: false,
           });
         }

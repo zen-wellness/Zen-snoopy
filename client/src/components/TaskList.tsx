@@ -55,8 +55,7 @@ export function TaskList({ date }: { date?: string }) {
                   reg.showNotification("🌸 Task Reminder!", {
                     body: `"${task.title}" starts in 5 minutes (at ${task.startTime})! ✨`,
                     icon: "/attached_assets/IMG_0336_1767718090891.jpeg",
-                    badge: "/attached_assets/IMG_0336_1767718090891.jpeg",
-                    vibrate: [200, 100, 200]
+                    badge: "/attached_assets/IMG_0336_1767718090891.jpeg"
                   });
                 });
               } else {
