@@ -36,7 +36,11 @@ export default function Dashboard() {
   const [view, setView] = useState<'list' | 'calendar' | 'timeline'>('timeline');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
-  const dateStr = selectedDate ? format(selectedDate, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd");
+  const dateStr = useMemo(() => {
+    const d = selectedDate || new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }, [selectedDate]);
+  
   const { data: tasks, isLoading: tasksLoading } = useTasks(dateStr);
   
   useEffect(() => {

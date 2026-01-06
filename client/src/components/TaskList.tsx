@@ -7,13 +7,20 @@ import { Plus, Clock, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { format, parse, subMinutes, isBefore, isAfter } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export function TaskList({ date }: { date?: string }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const today = format(new Date(), "yyyy-MM-dd");
-  const activeDate = date || today;
+  const activeDate = useMemo(() => {
+    if (date) return date;
+    const now = new Date();
+    return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+  }, [date]);
+  const today = useMemo(() => {
+    const now = new Date();
+    return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+  }, []);
   const { data: tasks, isLoading } = useTasks(activeDate);
   const deleteTask = useDeleteTask();
   const updateTask = useUpdateTask();
