@@ -27,8 +27,8 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
 
     // Check if the user needs their template schedule for today
     const today = new Date().toISOString().split('T')[0];
-    const tasks = await storage.getTasks(user.id);
-    const hasTasksForToday = tasks.some(t => t.date === today);
+    const tasksData = await storage.getTasks(user.id);
+    const hasTasksForToday = tasksData.some(t => t.date === today);
 
     if (!hasTasksForToday) {
       const templateTasks = [
@@ -43,9 +43,6 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
         { title: "Gaming time", startTime: "23:01", endTime: "02:00" },
       ];
       
-      const day = new Date().getDay();
-      // Apply to all days if it's the "schedule in its entirety" regardless of day
-      // But keeping the week-day logic if that was intended, though user said "entirety"
       for (const task of templateTasks) {
         await storage.createTask(user.id, {
           ...task,

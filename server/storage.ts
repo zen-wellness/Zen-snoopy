@@ -69,25 +69,20 @@ export class DatabaseStorage implements IStorage {
     ];
 
     const today = new Date();
-    // Add tasks for the next 7 days if they are M-F
-    for (let i = 0; i < 7; i++) {
+    // Add tasks for the next 30 days
+    for (let i = 0; i < 30; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-      const day = date.getDay();
-      
-      // 1-5 is Mon-Fri
-      if (day >= 1 && day <= 5) {
-        const dateStr = date.toISOString().split('T')[0];
-        for (const task of templateTasks) {
-          await db.insert(tasks).values({
-            userId: newUser.id,
-            title: task.title,
-            startTime: task.startTime,
-            endTime: task.endTime,
-            date: dateStr,
-            completed: false,
-          });
-        }
+      const dateStr = date.toISOString().split('T')[0];
+      for (const task of templateTasks) {
+        await db.insert(tasks).values({
+          userId: newUser.id,
+          title: task.title,
+          startTime: task.startTime,
+          endTime: task.endTime,
+          date: dateStr,
+          completed: false,
+        });
       }
     }
 
