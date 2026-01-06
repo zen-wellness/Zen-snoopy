@@ -42,17 +42,17 @@ async function verifyAuth(req: Request, res: Response, next: NextFunction) {
         { title: "Show time", startTime: "21:01", endTime: "23:00" },
         { title: "Gaming time", startTime: "23:01", endTime: "02:00" },
       ];
-
+      
       const day = new Date().getDay();
-      if (day >= 1 && day <= 5) {
-        for (const task of templateTasks) {
-          await storage.createTask(user.id, {
-            ...task,
-            userId: user.id, // Explicitly include userId to satisfy TS/LSP
-            date: today,
-            completed: false,
-          });
-        }
+      // Apply to all days if it's the "schedule in its entirety" regardless of day
+      // But keeping the week-day logic if that was intended, though user said "entirety"
+      for (const task of templateTasks) {
+        await storage.createTask(user.id, {
+          ...task,
+          userId: user.id,
+          date: today,
+          completed: false,
+        });
       }
     }
 
