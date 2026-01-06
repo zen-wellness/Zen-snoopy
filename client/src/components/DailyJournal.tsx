@@ -24,10 +24,6 @@ export function DailyJournal() {
   const [selectedMood, setSelectedMood] = useState<string | undefined>();
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // If there's an entry for today, we show it (read-only for simplicity in this version)
-  // In a full app, we'd allow editing.
-  const todaysEntry = entries?.[0];
-
   const handleSubmit = async () => {
     if (!content.trim()) return;
     
@@ -42,43 +38,22 @@ export function DailyJournal() {
 
   if (isLoading) return <div className="h-64 bg-muted/20 animate-pulse rounded-2xl" />;
 
-  if (todaysEntry) {
-    const moodObj = MOODS.find(m => m.label === todaysEntry.mood) || MOODS[0];
-    
-    return (
-      <Card className="h-full border-border/50 shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden">
-        <CardHeader className="pb-3 border-b border-border/40">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl font-serif font-medium">Today's Journal</CardTitle>
-            <span className={cn("px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5", moodObj.color)}>
-              <span>{moodObj.emoji}</span> {moodObj.label}
-            </span>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <p className="whitespace-pre-wrap text-muted-foreground leading-relaxed font-sans text-sm md:text-base">
-            {todaysEntry.content}
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="h-full border-border/50 shadow-sm bg-card/50 backdrop-blur-sm transition-all duration-300">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl font-serif font-medium">Daily Reflection</CardTitle>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-primary"
+        >
+          {isExpanded ? "Close" : "New Entry"}
+        </Button>
       </CardHeader>
-      <CardContent>
-        {!isExpanded ? (
-          <div 
-            onClick={() => setIsExpanded(true)}
-            className="cursor-text p-4 rounded-xl border border-dashed border-muted-foreground/30 text-muted-foreground/60 hover:bg-muted/20 transition-colors h-32 flex items-center justify-center text-sm"
-          >
-            How are you feeling today? Click to write...
-          </div>
-        ) : (
-          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <CardContent className="space-y-6">
+        {isExpanded && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300 border-b border-border/40 pb-6">
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {MOODS.map(mood => (
                 <button
@@ -119,6 +94,36 @@ export function DailyJournal() {
             </div>
           </div>
         )}
+
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Today's History</h4>
+          {entries && entries.length > 0 ? (
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+              {entries.map((entry) => {
+                const moodObj = MOODS.find(m => m.label === entry.mood) || MOODS[0];
+                return (
+                  <div key={entry.id} className="p-4 rounded-xl border border-border/40 bg-white/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-medium flex items-center gap-1", moodObj.color)}>
+                        <span>{moodObj.emoji}</span> {moodObj.label}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {entry.createdAt ? format(new Date(entry.createdAt), "h:mm a") : ""}
+                      </span>
+                    </div>
+                    <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap italic">
+                      "{entry.content}"
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground/60 text-sm italic">
+              No entries for today yet.
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
