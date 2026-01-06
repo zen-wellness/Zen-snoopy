@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTasks, useUpdateTask } from "@/hooks/use-tasks";
 import { TaskModal } from "@/components/TaskModal";
 import { LoveBubble } from "@/components/LoveBubble";
+import { LoveNotes } from "@/components/LoveNotes";
 import { format, parse, isWithinInterval, startOfDay, addHours } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -118,6 +119,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen p-2 md:p-8 relative z-10 flex flex-col max-w-full overflow-x-hidden">
       <LoveBubble />
+      <LoveNotes />
       <header className="w-full mx-auto mb-4 md:mb-8 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 md:gap-3 min-w-0">
           <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white flex-shrink-0 flex items-center justify-center shadow-lg shadow-primary/10 snoopy-float overflow-hidden border-2 border-primary/20">
