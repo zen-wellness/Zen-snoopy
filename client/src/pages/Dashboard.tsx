@@ -241,7 +241,18 @@ export default function Dashboard() {
                   <AnimatePresence>
                     {timelineTasks.length > 0 ? (
                       timelineTasks
-                        .sort((a: any, b: any) => a.startHour - b.startHour)
+                        .sort((a: any, b: any) => {
+                          // Special sorting to ensure "Sleep" 02:00 comes first if it exists
+                          if (a.startTime === "02:00" && a.title === "Sleep") return -1;
+                          if (b.startTime === "02:00" && b.title === "Sleep") return 1;
+                          return a.startHour - b.startHour;
+                        })
+                        .filter((task: any) => {
+                          // Find the sleep task start hour
+                          const sleepTask = timelineTasks.find(t => t.title === "Sleep" && t.startTime === "02:00");
+                          const sleepStartHour = sleepTask ? sleepTask.startHour : 2; // Default to 2 AM
+                          return task.startHour >= sleepStartHour || (task.title === "Sleep" && task.startTime === "02:00");
+                        })
                         .map((task: any) => (
                           <motion.div
                             key={task.id}
