@@ -21,6 +21,11 @@ export function TaskList() {
   useEffect(() => {
     if (!tasks) return;
 
+    // Request notification permission on mount
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+
     const checkReminders = () => {
       const now = new Date();
       
@@ -32,6 +37,15 @@ export function TaskList() {
           const reminderTime = subMinutes(startTime, 5);
 
           if (isAfter(now, reminderTime) && isBefore(now, startTime)) {
+            // Browser Notification
+            if ("Notification" in window && Notification.permission === "granted") {
+              new Notification("🌸 Task Reminder!", {
+                body: `"${task.title}" starts in 5 minutes (at ${task.startTime})! ✨`,
+                icon: "/attached_assets/IMG_0320_1767672528678.jpeg"
+              });
+            }
+
+            // Fallback Toast
             toast({
               title: "🌸 Task Reminder!",
               description: `"${task.title}" starts in 5 minutes (at ${task.startTime})! ✨`,
