@@ -42,13 +42,58 @@ export default function Dashboard() {
         return {
           ...task,
           startHour,
-          duration: endHour - startHour
+          duration: endHour - startHour,
+          startTimeObj: start,
+          endTimeObj: end
         };
       } catch (e) {
         return null;
       }
     }).filter(Boolean);
   }, [tasks]);
+
+  const { currentTask, nextTask, timeLeft } = useMemo(() => {
+    if (!timelineTasks.length) return { currentTask: null, nextTask: null, timeLeft: null };
+    
+    const now = new Date();
+    const nowHour = now.getHours() + now.getMinutes() / 60;
+    
+    let current = null;
+    let next = null;
+    
+    // Sort tasks by start time
+    const sorted = [...timelineTasks].sort((a, b) => (a as any).startHour - (b as any).startHour);
+    
+    for (let i = 0; i < sorted.length; i++) {
+      const task: any = sorted[i];
+      const taskEnd = task.startHour + task.duration;
+      
+      if (nowHour >= task.startHour && nowHour < taskEnd) {
+        current = task;
+        next = sorted[(i + 1) % sorted.length];
+        break;
+      }
+    }
+    
+    if (!current) {
+      // Find the first task that starts after now
+      next = sorted.find((t: any) => t.startHour > nowHour) || sorted[0];
+    }
+    
+    let timeDiff = null;
+    if (next) {
+      const nextStart: any = (next as any).startHour;
+      let diffHours = nextStart - nowHour;
+      if (diffHours < 0) diffHours += 24;
+      
+      const totalMinutes = Math.floor(diffHours * 60);
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      timeDiff = h > 0 ? `${h}h ${m}m` : `${m}m`;
+    }
+    
+    return { currentTask: current, nextTask: next, timeLeft: timeDiff };
+  }, [timelineTasks]);
 
   return (
     <div className="min-h-screen p-4 md:p-8 relative z-10">
@@ -108,6 +153,42 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="border-primary/20 bg-white/60 backdrop-blur-md">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Current Focus</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold text-primary">{currentTask?.title || "No active task"}</h3>
+                  <p className="text-sm text-muted-foreground">{currentTask?.startTime} - {currentTask?.endTime}</p>
+                </div>
+                <div className="bg-primary/10 p-3 rounded-full">
+                  <Sparkles className="w-6 h-6 text-primary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-primary/20 bg-white/60 backdrop-blur-md">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Up Next</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold text-accent-foreground">{nextTask?.title || "Nothing scheduled"}</h3>
+                  <p className="text-sm text-muted-foreground">Starts in {timeLeft || "0m"} (at {nextTask?.startTime})</p>
+                </div>
+                <div className="bg-accent/10 p-3 rounded-full">
+                  <Clock className="w-6 h-6 text-accent-foreground" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         <QuoteBanner />
 
         {view === 'timeline' ? (
