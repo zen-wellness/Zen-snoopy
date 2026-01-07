@@ -34,10 +34,25 @@ function CheckIcon({ className }: { className?: string }) {
   );
 }
 
+import { OnboardingTour } from "@/components/OnboardingTour";
+
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const [view, setView] = useState<'list' | 'calendar' | 'timeline'>('timeline');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [showTour, setShowTour] = useState(false);
+
+  useEffect(() => {
+    const tourCompleted = localStorage.getItem(`tour_completed_${user?.uid}`);
+    if (!tourCompleted && user) {
+      setShowTour(true);
+    }
+  }, [user]);
+
+  const completeTour = () => {
+    setShowTour(false);
+    localStorage.setItem(`tour_completed_${user?.uid}`, "true");
+  };
   
   const dateStr = useMemo(() => {
     const d = selectedDate || new Date();
@@ -135,6 +150,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen p-2 md:p-8 relative z-10 flex flex-col max-w-full overflow-x-hidden">
+      {showTour && <OnboardingTour onComplete={completeTour} />}
       <LoveBubble />
       <LoveNotes />
       <header className="w-full mx-auto mb-4 md:mb-8 flex items-center justify-between gap-2">
