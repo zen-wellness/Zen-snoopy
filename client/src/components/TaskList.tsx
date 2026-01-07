@@ -22,13 +22,14 @@ export function TaskList({ date }: { date?: string }) {
     return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
   }, []);
   const { data: tasks, isLoading } = useTasks(activeDate);
+  const { user } = useAuth();
   const deleteTask = useDeleteTask();
   const updateTask = useUpdateTask();
   const { toast } = useToast();
   const notifiedTasks = useRef<Set<number>>(new Set());
 
   useEffect(() => {
-    if (!tasks) return;
+    if (!tasks || !user?.notificationsEnabled) return;
 
     // Request notification permission on mount
     if ("Notification" in window && Notification.permission === "default") {
@@ -37,13 +38,14 @@ export function TaskList({ date }: { date?: string }) {
 
     const checkReminders = () => {
       const now = new Date();
+      const leadTime = user.notificationLeadTime || 5;
       
       tasks.forEach((task) => {
         if (!task.startTime || task.completed || notifiedTasks.current.has(task.id)) return;
 
         try {
           const startTime = parse(task.startTime, "HH:mm", new Date());
-          const reminderTime = subMinutes(startTime, 5);
+          const reminderTime = subMinutes(startTime, leadTime);
 
           if (isAfter(now, reminderTime) && isBefore(now, startTime)) {
             // Browser Notification
@@ -53,14 +55,14 @@ export function TaskList({ date }: { date?: string }) {
                 // Use Service Worker for better PWA notification support
                 navigator.serviceWorker.ready.then((reg) => {
                   reg.showNotification("🌸 Task Reminder!", {
-                    body: `"${task.title}" starts in 5 minutes (at ${task.startTime})! ✨`,
+                    body: `"${task.title}" starts in ${leadTime} minutes (at ${task.startTime})! ✨`,
                     icon: "/attached_assets/IMG_0336_1767718090891.jpeg",
                     badge: "/attached_assets/IMG_0336_1767718090891.jpeg"
                   });
                 });
               } else {
                 new Notification("🌸 Task Reminder!", {
-                  body: `"${task.title}" starts in 5 minutes (at ${task.startTime})! ✨`,
+                  body: `"${task.title}" starts in ${leadTime} minutes (at ${task.startTime})! ✨`,
                   icon: "/attached_assets/IMG_0336_1767718090891.jpeg"
                 });
               }
@@ -69,7 +71,7 @@ export function TaskList({ date }: { date?: string }) {
             // Fallback Toast
             toast({
               title: "🌸 Task Reminder!",
-              description: `"${task.title}" starts in 5 minutes (at ${task.startTime})! ✨`,
+              description: `"${task.title}" starts in ${leadTime} minutes (at ${task.startTime})! ✨`,
               variant: "default",
             });
             notifiedTasks.current.add(task.id);
@@ -84,7 +86,7 @@ export function TaskList({ date }: { date?: string }) {
     checkReminders(); // Initial check
 
     return () => clearInterval(interval);
-  }, [tasks, toast]);
+  }, [tasks, toast, user?.notificationsEnabled, user?.notificationLeadTime]);
 
   const handleToggle = (id: number, completed: boolean) => {
     updateTask.mutate({ id, completed });

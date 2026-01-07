@@ -160,6 +160,19 @@ export async function registerRoutes(
     res.json(entries);
   });
 
+  app.patch("/api/user/settings", verifyAuth, async (req, res) => {
+    const userId = (req as any).user.uid;
+    const user = await storage.getUser(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const updatedUser = await storage.createUser({
+      ...user,
+      notificationsEnabled: req.body.notificationsEnabled ?? user.notificationsEnabled,
+      notificationLeadTime: req.body.notificationLeadTime ?? user.notificationLeadTime,
+    });
+    res.json(updatedUser);
+  });
+
   app.post(api.journal.create.path, verifyAuth, async (req, res) => {
     const userId = (req as any).user.uid;
     const input = api.journal.create.input.parse({ ...req.body, userId });
