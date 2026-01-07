@@ -300,17 +300,19 @@ export async function registerRoutes(
       if (response.choices[0]?.message?.tool_calls) {
         const toolCalls = response.choices[0].message.tool_calls;
         for (const toolCall of toolCalls) {
-          const args = JSON.parse(toolCall.function.arguments);
-          if (toolCall.function.name === "createTask") {
-            await storage.createTask(userId, args);
-            aiContent += `I've added "${args.title}" to your schedule for ${args.date} at ${args.startTime}. `;
-          } else if (toolCall.function.name === "updateTask") {
-            const { id, ...updates } = args;
-            await storage.updateTask(id, userId, updates);
-            aiContent += `I've updated your task "${updates.title || 'unnamed'}" as requested. `;
-          } else if (toolCall.function.name === "deleteTask") {
-            await storage.deleteTask(args.id, userId);
-            aiContent += `I've removed that task from your schedule. `;
+          if (toolCall.type === "function") {
+            const args = JSON.parse(toolCall.function.arguments);
+            if (toolCall.function.name === "createTask") {
+              await storage.createTask(userId, args);
+              aiContent += `I've added "${args.title}" to your schedule for ${args.date} at ${args.startTime}. `;
+            } else if (toolCall.function.name === "updateTask") {
+              const { id, ...updates } = args;
+              await storage.updateTask(id, userId, updates);
+              aiContent += `I've updated your task "${updates.title || 'unnamed'}" as requested. `;
+            } else if (toolCall.function.name === "deleteTask") {
+              await storage.deleteTask(args.id, userId);
+              aiContent += `I've removed that task from your schedule. `;
+            }
           }
         }
         aiContent += "Is there anything else I can help you with?";
