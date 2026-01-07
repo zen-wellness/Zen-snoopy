@@ -70,12 +70,13 @@ export class DatabaseStorage implements IStorage {
 
     const today = new Date();
     // Add tasks for the next 30 days
+    const taskValues = [];
     for (let i = -1; i < 30; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       const dateStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
       for (const task of templateTasks) {
-        await db.insert(tasks).values({
+        taskValues.push({
           userId: newUser.id,
           title: task.title,
           startTime: task.startTime,
@@ -84,6 +85,10 @@ export class DatabaseStorage implements IStorage {
           completed: false,
         });
       }
+    }
+
+    if (taskValues.length > 0) {
+      await db.insert(tasks).values(taskValues);
     }
 
     return newUser;
