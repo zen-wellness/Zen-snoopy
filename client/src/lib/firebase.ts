@@ -21,6 +21,6 @@ if (typeof window !== "undefined") {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
+export const analytics = null;
 export const db = getFirestore(app);
 export default app;
