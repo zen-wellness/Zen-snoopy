@@ -19,7 +19,7 @@ export function DailyCheckIn() {
   const { toast } = useToast();
   const [mood, setMood] = useState<string | null>(null);
   const [meal, setMeal] = useState("");
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(true);
   const [chatInput, setChatInput] = useState("");
 
   const { data: moodChecks = [] } = useQuery<MoodCheck[]>({ queryKey: ["/api/mood-checks"] });
