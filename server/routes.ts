@@ -5,6 +5,12 @@ import { api } from "@shared/routes";
 import { insertMoodCheckSchema, insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import { auth as adminAuth } from "./lib/firebase";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+});
 
 // Middleware to verify Auth
 async function verifyAuth(req: Request, res: Response, next: NextFunction) {
@@ -214,14 +220,46 @@ export async function registerRoutes(
     const input = insertChatMessageSchema.parse({ ...req.body, userId });
     const message = await storage.createChatMessage(userId, input);
     
-    // Simple AI echo for now - real AI logic would go here
-    const aiResponse = await storage.createChatMessage(userId, {
-      userId,
-      role: "assistant",
-      content: `I'm here to support you. You mentioned: "${input.content}". How does that make you feel?`,
-    });
+    try {
+      // Get conversation history for context
+      const history = await storage.getChatMessages(userId);
+      // Take last 5 messages for context
+      const context = history.slice(0, 5).reverse().map(m => ({
+        role: m.role as "user" | "assistant",
+        content: m.content
+      }));
 
-    res.status(201).json([message, aiResponse]);
+      const response = await openai.chat.completions.create({
+        model: "gpt-5",
+        messages: [
+          { 
+            role: "system", 
+            content: "You are Snoopy, a kind and supportive AI wellness guide and therapist. You help users manage their sleep, mood, and daily schedule. Your tone is warm, gentle, and encouraging. Keep responses concise but meaningful. Use 'Woodstock' metaphors occasionally to show companionship." 
+          },
+          ...context,
+          { role: "user", content: input.content }
+        ],
+        max_completion_tokens: 500
+      });
+
+      const aiContent = response.choices[0]?.message?.content || "I'm here for you. How else can I help?";
+
+      const aiResponse = await storage.createChatMessage(userId, {
+        userId,
+        role: "assistant",
+        content: aiContent,
+      });
+
+      res.status(201).json([message, aiResponse]);
+    } catch (error) {
+      console.error("AI Chat Error:", error);
+      const fallbackResponse = await storage.createChatMessage(userId, {
+        userId,
+        role: "assistant",
+        content: "I'm here to listen. Tell me more about how you're feeling.",
+      });
+      res.status(201).json([message, fallbackResponse]);
+    }
   });
 
   return httpServer;
