@@ -1,4 +1,5 @@
 import { useTasks, useDeleteTask, useUpdateTask } from "@/hooks/use-tasks";
+import { useAuth } from "@/hooks/use-auth";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
