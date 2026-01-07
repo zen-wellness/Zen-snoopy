@@ -221,9 +221,8 @@ export async function registerRoutes(
     const message = await storage.createChatMessage(userId, input);
     
     try {
-      // Get conversation history for context
-      const history = await storage.getChatMessages(userId);
       // Take last 15 messages for more depth and context
+      const history = await storage.getChatMessages(userId);
       const context = history.slice(0, 15).reverse().map(m => ({
         role: m.role as "user" | "assistant",
         content: m.content
@@ -234,16 +233,90 @@ export async function registerRoutes(
         messages: [
           { 
             role: "system", 
-            content: "You are Snoopy, a highly intuitive, wise, and deeply empathetic therapist and life management coach. You provide interactive, informative, and personalized guidance. Your goal is to help the user grow, heal, and manage their life effectively. \n\nKey interaction principles:\n1. BE INTERACTIVE: Don't just give answers. Ask thoughtful, open-ended questions that encourage self-reflection.\n2. PROVIDE DEPTH: Offer psychological insights or practical life-management strategies based on the user's input.\n3. STAY IN CHARACTER: Use your Snoopy persona (warm, gentle, occasionally using Woodstock metaphors for support) but ensure the content is high-value therapy and coaching.\n4. PERSONALIZE: Reference past parts of the conversation if relevant to show you are truly listening.\n5. ATTENTIVE & CARING: Your primary concern is the user's 'glow-up' and mental well-being." 
+            content: "You are Snoopy, a highly intuitive, wise, and deeply empathetic therapist and life management coach. You provide interactive, informative, and personalized guidance. \n\nKey interaction principles:\n1. BE INTERACTIVE: Ask thoughtful, open-ended questions.\n2. PROVIDE DEPTH: Offer psychological insights or practical life-management strategies.\n3. STAY IN CHARACTER: Use your Snoopy persona.\n4. PERSONALIZE: Reference past parts of the conversation.\n5. SCHEDULE MANAGEMENT: You have the ability to manage the user's schedule. If a user asks to add, update, or delete a task, use the provided tools to perform these actions. Always confirm the action with the user.\n6. ATTENTIVE & CARING: Your primary concern is the user's 'glow-up' and mental well-being." 
           },
           ...context,
           { role: "user", content: input.content }
+        ],
+        tools: [
+          {
+            type: "function",
+            function: {
+              name: "createTask",
+              description: "Create a new task in the user's schedule",
+              parameters: {
+                type: "object",
+                properties: {
+                  title: { type: "string", description: "The title of the task" },
+                  startTime: { type: "string", description: "The start time in HH:mm format" },
+                  endTime: { type: "string", description: "The end time in HH:mm format" },
+                  date: { type: "string", description: "The date in YYYY-MM-DD format" },
+                  description: { type: "string", description: "Optional description of the task" }
+                },
+                required: ["title", "startTime", "endTime", "date"]
+              }
+            }
+          },
+          {
+            type: "function",
+            function: {
+              name: "updateTask",
+              description: "Update an existing task in the user's schedule",
+              parameters: {
+                type: "object",
+                properties: {
+                  id: { type: "number", description: "The ID of the task to update" },
+                  title: { type: "string", description: "The new title of the task" },
+                  startTime: { type: "string", description: "The new start time in HH:mm format" },
+                  endTime: { type: "string", description: "The new end time in HH:mm format" },
+                  date: { type: "string", description: "The new date in YYYY-MM-DD format" },
+                  description: { type: "string", description: "The new description of the task" },
+                  completed: { type: "boolean", description: "Whether the task is completed" }
+                },
+                required: ["id"]
+              }
+            }
+          },
+          {
+            type: "function",
+            function: {
+              name: "deleteTask",
+              description: "Delete a task from the user's schedule",
+              parameters: {
+                type: "object",
+                properties: {
+                  id: { type: "number", description: "The ID of the task to delete" }
+                },
+                required: ["id"]
+              }
+            }
+          }
         ],
         max_completion_tokens: 800,
         temperature: 0.7
       });
 
-      const aiContent = response.choices[0]?.message?.content || "I'm here for you. How else can I help?";
+      let aiContent = "";
+      if (response.choices[0]?.message?.tool_calls) {
+        const toolCalls = response.choices[0].message.tool_calls;
+        for (const toolCall of toolCalls) {
+          const args = JSON.parse(toolCall.function.arguments);
+          if (toolCall.function.name === "createTask") {
+            await storage.createTask(userId, args);
+            aiContent += `I've added "${args.title}" to your schedule for ${args.date} at ${args.startTime}. `;
+          } else if (toolCall.function.name === "updateTask") {
+            const { id, ...updates } = args;
+            await storage.updateTask(id, userId, updates);
+            aiContent += `I've updated your task "${updates.title || 'unnamed'}" as requested. `;
+          } else if (toolCall.function.name === "deleteTask") {
+            await storage.deleteTask(args.id, userId);
+            aiContent += `I've removed that task from your schedule. `;
+          }
+        }
+        aiContent += "Is there anything else I can help you with?";
+      } else {
+        aiContent = response.choices[0]?.message?.content || "I'm here for you. How else can I help?";
+      }
 
       const aiResponse = await storage.createChatMessage(userId, {
         userId,
