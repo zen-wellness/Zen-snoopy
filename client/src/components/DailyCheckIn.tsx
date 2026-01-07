@@ -157,7 +157,14 @@ export function DailyCheckIn() {
                       {msg.content}
                     </div>
                   ))}
-                  {messages.length === 0 && (
+                  {chatMutation.isPending && (
+                    <div className="bg-muted text-foreground mr-auto rounded-tl-none max-w-[80%] p-3 rounded-2xl text-xs flex gap-1">
+                      <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1 }}>.</motion.span>
+                      <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}>.</motion.span>
+                      <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}>.</motion.span>
+                    </div>
+                  )}
+                  {messages.length === 0 && !chatMutation.isPending && (
                     <div className="text-center text-muted-foreground text-xs py-10">
                       Hi {user?.displayName}! I'm here to listen and guide you through your day. How are you feeling?
                     </div>

@@ -223,8 +223,8 @@ export async function registerRoutes(
     try {
       // Get conversation history for context
       const history = await storage.getChatMessages(userId);
-      // Take last 5 messages for context
-      const context = history.slice(0, 5).reverse().map(m => ({
+      // Take last 15 messages for more depth and context
+      const context = history.slice(0, 15).reverse().map(m => ({
         role: m.role as "user" | "assistant",
         content: m.content
       }));
@@ -234,12 +234,13 @@ export async function registerRoutes(
         messages: [
           { 
             role: "system", 
-            content: "You are Snoopy, a kind and supportive AI wellness guide, therapist, and life management coach. You are very attentive, caring, and deeply invested in the user's well-being. You help users manage their sleep, mood, and daily schedule with a blend of professional empathy and warm companionship. Your tone is gentle, encouraging, and insightful. When giving advice, be practical yet nurturing. Occasionally use 'Woodstock' metaphors to symbolize support and friendship. Always prioritize the user's mental health and glow-up journey." 
+            content: "You are Snoopy, a highly intuitive, wise, and deeply empathetic therapist and life management coach. You provide interactive, informative, and personalized guidance. Your goal is to help the user grow, heal, and manage their life effectively. \n\nKey interaction principles:\n1. BE INTERACTIVE: Don't just give answers. Ask thoughtful, open-ended questions that encourage self-reflection.\n2. PROVIDE DEPTH: Offer psychological insights or practical life-management strategies based on the user's input.\n3. STAY IN CHARACTER: Use your Snoopy persona (warm, gentle, occasionally using Woodstock metaphors for support) but ensure the content is high-value therapy and coaching.\n4. PERSONALIZE: Reference past parts of the conversation if relevant to show you are truly listening.\n5. ATTENTIVE & CARING: Your primary concern is the user's 'glow-up' and mental well-being." 
           },
           ...context,
           { role: "user", content: input.content }
         ],
-        max_completion_tokens: 500
+        max_completion_tokens: 800,
+        temperature: 0.7
       });
 
       const aiContent = response.choices[0]?.message?.content || "I'm here for you. How else can I help?";
