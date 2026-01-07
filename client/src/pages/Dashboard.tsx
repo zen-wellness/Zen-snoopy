@@ -4,7 +4,7 @@ import { TaskList } from "@/components/TaskList";
 import { HabitTracker } from "@/components/HabitTracker";
 import { DailyJournal } from "@/components/DailyJournal";
 import { Button } from "@/components/ui/button";
-import { LogOut, Sparkles, Calendar as CalendarIcon, List, Clock } from "lucide-react";
+import { LogOut, Sparkles, Calendar as CalendarIcon, List, Clock, Bell, BellOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import snoopyStanding from "@assets/IMG_0320_1767672528678.jpeg";
 import { useState, useMemo, useEffect } from "react";
@@ -16,6 +16,8 @@ import { LoveBubble } from "@/components/LoveBubble";
 import { LoveNotes } from "@/components/LoveNotes";
 import { format, parse, isWithinInterval, startOfDay, addHours } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 function CheckIcon({ className }: { className?: string }) {
   return (
@@ -47,6 +49,16 @@ export default function Dashboard() {
     console.log("DASHBOARD: Tasks updated", tasks);
   }, [tasks]);
   const updateTask = useUpdateTask();
+
+  const updateSettings = useMutation({
+    mutationFn: async (settings: { notificationsEnabled?: boolean; notificationLeadTime?: number }) => {
+      const res = await apiRequest("PATCH", "/api/user/settings", settings);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    },
+  });
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -137,6 +149,14 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => updateSettings.mutate({ notificationsEnabled: !user?.notificationsEnabled })}
+            className={cn("h-8 w-8", user?.notificationsEnabled ? "text-primary" : "text-muted-foreground")}
+          >
+            {user?.notificationsEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+          </Button>
           <Button 
             variant="ghost" 
             size="sm"

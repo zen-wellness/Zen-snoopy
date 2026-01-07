@@ -9,6 +9,8 @@ export const users = pgTable("users", {
   email: text("email"),
   displayName: text("display_name"),
   photoURL: text("photo_url"),
+  notificationsEnabled: boolean("notifications_enabled").default(true).notNull(),
+  notificationLeadTime: integer("notification_lead_time").default(5).notNull(), // minutes before task
   createdAt: timestamp("created_at").defaultNow(),
 });
 

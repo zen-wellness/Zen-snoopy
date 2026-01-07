@@ -48,6 +48,8 @@ export class DatabaseStorage implements IStorage {
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
+        notificationsEnabled: user.notificationsEnabled,
+        notificationLeadTime: user.notificationLeadTime,
       }
     }).returning();
 
