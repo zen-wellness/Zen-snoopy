@@ -9,6 +9,7 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import Landing from "@/pages/Landing";
 import JournalHistory from "@/pages/JournalHistory";
+import TrendsHistory from "@/pages/TrendsHistory";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -43,6 +44,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/journal-history" component={JournalHistory} />
+      <Route path="/trends" component={TrendsHistory} />
       <Route component={NotFound} />
     </Switch>
   );

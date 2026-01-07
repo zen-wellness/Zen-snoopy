@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Smile, Frown, Meh, Utensils, Send, MessageCircle, X, Sparkles } from "lucide-react";
+import { Smile, Frown, Meh, Utensils, Send, MessageCircle, X, Sparkles, TrendingUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { Link } from "wouter";
+import { MoodCheck, ChatMessage } from "@shared/schema";
 
 export function DailyCheckIn() {
   const { user } = useAuth();
@@ -20,8 +22,8 @@ export function DailyCheckIn() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState("");
 
-  const { data: moodChecks } = useQuery({ queryKey: ["/api/mood-checks"] });
-  const { data: messages } = useQuery({ queryKey: ["/api/chat-messages"] });
+  const { data: moodChecks = [] } = useQuery<MoodCheck[]>({ queryKey: ["/api/mood-checks"] });
+  const { data: messages = [] } = useQuery<ChatMessage[]>({ queryKey: ["/api/chat-messages"] });
 
   const moodMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -55,15 +57,20 @@ export function DailyCheckIn() {
   }, []);
 
   const hasCheckedInToday = useMemo(() => {
-    if (!moodChecks) return false;
     const today = format(new Date(), "yyyy-MM-dd");
-    return moodChecks.some((c: any) => c.date === today && c.timeOfDay === timeOfDay);
+    return moodChecks.some((c) => c.date === today && c.timeOfDay === timeOfDay);
   }, [moodChecks, timeOfDay]);
-
-  if (hasCheckedInToday && !isChatOpen) return null;
 
   return (
     <>
+      <div className="flex justify-end mb-4">
+        <Link href="/trends">
+          <Button variant="outline" size="sm" className="gap-2 bg-white/50 backdrop-blur-sm border-primary/20 hover:bg-primary/5">
+            <TrendingUp className="w-4 h-4 text-primary" /> 
+            <span className="font-medium text-primary">Trends & History</span>
+          </Button>
+        </Link>
+      </div>
       {!hasCheckedInToday && (
         <Card className="border-primary/20 bg-white/60 backdrop-blur-md shadow-xl mb-6 overflow-hidden">
           <CardHeader className="p-4 bg-primary/5">
@@ -137,7 +144,7 @@ export function DailyCheckIn() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide">
-                  {messages?.slice().reverse().map((msg: any) => (
+                  {messages.slice().reverse().map((msg) => (
                     <div
                       key={msg.id}
                       className={cn(
@@ -150,7 +157,7 @@ export function DailyCheckIn() {
                       {msg.content}
                     </div>
                   ))}
-                  {messages?.length === 0 && (
+                  {messages.length === 0 && (
                     <div className="text-center text-muted-foreground text-xs py-10">
                       Hi {user?.displayName}! I'm here to listen and guide you through your day. How are you feeling?
                     </div>
