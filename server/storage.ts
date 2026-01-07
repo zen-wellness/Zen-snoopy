@@ -1,11 +1,13 @@
 import { db } from "./db";
 import {
-  users, tasks, habits, habitLogs, journalEntries,
+  users, tasks, habits, habitLogs, journalEntries, moodChecks, chatMessages,
   type User, type InsertUser,
   type Task, type InsertTask,
   type Habit, type InsertHabit,
   type HabitLog, type InsertHabitLog,
-  type JournalEntry, type InsertJournalEntry
+  type JournalEntry, type InsertJournalEntry,
+  type MoodCheck, type InsertMoodCheck,
+  type ChatMessage, type InsertChatMessage
 } from "@shared/schema";
 import { eq, and, desc } from "drizzle-orm";
 
@@ -33,6 +35,14 @@ export interface IStorage {
   getJournalEntries(userId: string): Promise<JournalEntry[]>;
   createJournalEntry(userId: string, entry: InsertJournalEntry): Promise<JournalEntry>;
   deleteJournalEntry(id: number, userId: string): Promise<void>;
+
+  // Mood Checks
+  getMoodChecks(userId: string): Promise<MoodCheck[]>;
+  createMoodCheck(userId: string, check: InsertMoodCheck): Promise<MoodCheck>;
+
+  // Chat
+  getChatMessages(userId: string): Promise<ChatMessage[]>;
+  createChatMessage(userId: string, message: InsertChatMessage): Promise<ChatMessage>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -169,6 +179,24 @@ export class DatabaseStorage implements IStorage {
 
   async deleteJournalEntry(id: number, userId: string): Promise<void> {
     await db.delete(journalEntries).where(and(eq(journalEntries.id, id), eq(journalEntries.userId, userId)));
+  }
+
+  async getMoodChecks(userId: string): Promise<MoodCheck[]> {
+    return await db.select().from(moodChecks).where(eq(moodChecks.userId, userId)).orderBy(desc(moodChecks.createdAt));
+  }
+
+  async createMoodCheck(userId: string, check: InsertMoodCheck): Promise<MoodCheck> {
+    const [newCheck] = await db.insert(moodChecks).values({ ...check, userId }).returning();
+    return newCheck;
+  }
+
+  async getChatMessages(userId: string): Promise<ChatMessage[]> {
+    return await db.select().from(chatMessages).where(eq(chatMessages.userId, userId)).orderBy(desc(chatMessages.createdAt));
+  }
+
+  async createChatMessage(userId: string, message: InsertChatMessage): Promise<ChatMessage> {
+    const [newMessage] = await db.insert(chatMessages).values({ ...message, userId }).returning();
+    return newMessage;
   }
 }
 

@@ -14,6 +14,7 @@ import { useTasks, useUpdateTask } from "@/hooks/use-tasks";
 import { TaskModal } from "@/components/TaskModal";
 import { LoveBubble } from "@/components/LoveBubble";
 import { LoveNotes } from "@/components/LoveNotes";
+import { DailyCheckIn } from "@/components/DailyCheckIn";
 import { format, parse, isWithinInterval, startOfDay, addHours } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
@@ -226,6 +227,8 @@ export default function Dashboard() {
         </div>
 
         <QuoteBanner />
+
+        <DailyCheckIn />
 
         <div className="pb-4">
           {view === 'timeline' ? (

@@ -2,6 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
+import { insertMoodCheckSchema, insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import { auth as adminAuth } from "./lib/firebase";
 
@@ -185,6 +186,42 @@ export async function registerRoutes(
     const id = Number(req.params.id);
     await storage.deleteJournalEntry(id, userId);
     res.status(204).end();
+  });
+
+  // -- Mood Checks --
+  app.get("/api/mood-checks", verifyAuth, async (req, res) => {
+    const userId = (req as any).user.uid;
+    const checks = await storage.getMoodChecks(userId);
+    res.json(checks);
+  });
+
+  app.post("/api/mood-checks", verifyAuth, async (req, res) => {
+    const userId = (req as any).user.uid;
+    const input = insertMoodCheckSchema.parse({ ...req.body, userId });
+    const check = await storage.createMoodCheck(userId, input);
+    res.status(201).json(check);
+  });
+
+  // -- Chat --
+  app.get("/api/chat-messages", verifyAuth, async (req, res) => {
+    const userId = (req as any).user.uid;
+    const messages = await storage.getChatMessages(userId);
+    res.json(messages);
+  });
+
+  app.post("/api/chat-messages", verifyAuth, async (req, res) => {
+    const userId = (req as any).user.uid;
+    const input = insertChatMessageSchema.parse({ ...req.body, userId });
+    const message = await storage.createChatMessage(userId, input);
+    
+    // Simple AI echo for now - real AI logic would go here
+    const aiResponse = await storage.createChatMessage(userId, {
+      userId,
+      role: "assistant",
+      content: `I'm here to support you. You mentioned: "${input.content}". How does that make you feel?`,
+    });
+
+    res.status(201).json([message, aiResponse]);
   });
 
   return httpServer;
